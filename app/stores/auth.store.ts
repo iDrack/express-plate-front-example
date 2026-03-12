@@ -1,38 +1,41 @@
 import type { LoginResponse, UserProfile } from "./auth.type";
 import { useAuthenticatedFetch } from "~/composables/authenticatedFetch";
 
-export const authStore = defineStore("auth", () => {
+export const useAuthStore = defineStore("auth", () => {
     const authenticatedFetch = useAuthenticatedFetch();
-    const apiUrl = `${ useRuntimeConfig().public.apiUrl}/users`;
+    const apiUrl = `${useRuntimeConfig().public.apiUrl}/users`;
     const isLoading = ref(false);
     const authToken = ref("");
 
     /**
      * Create user account and log in, storing it's authToken.
-     * @param username 
-     * @param email 
-     * @param password 
+     * @param username
+     * @param email
+     * @param password
      */
     const register = async (
         username: string,
-        email: string, 
-        password: string
+        email: string,
+        password: string,
     ) => {
         try {
             isLoading.value = true;
-            const {data, error} = useFetch<LoginResponse>(`${apiUrl}/register`,{
-                method: 'POST',
-                body: {
-                    username: username,
-                    email: email,
-                    password: password
-                }
-                }
-            )
+            const { data, error } = useFetch<LoginResponse>(
+                `${apiUrl}/register`,
+                {
+                    method: "POST",
+                    body: {
+                        username: username,
+                        email: email,
+                        password: password,
+                    },
+                },
+            );
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode || 500,
-                    statusMessage: error.value.message || "Error while creating account.",
+                    statusMessage:
+                        error.value.message || "Error while creating account.",
                 });
             }
             if (!data.value) {
@@ -42,19 +45,18 @@ export const authStore = defineStore("auth", () => {
                 });
             }
             authToken.value = data.value.accessToken;
-
         } catch (error) {
-            throw error
+            throw error;
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
-    }
+    };
 
     /**
      * Log the user and fetch it's auth token.
-     * @param username 
-     * @param email 
-     * @param password 
+     * @param username
+     * @param email
+     * @param password
      */
     const login = async (
         username: string | null,
@@ -71,14 +73,17 @@ export const authStore = defineStore("auth", () => {
         try {
             isLoading.value = true;
 
-            const { data, error } = await useFetch<LoginResponse>(`${apiUrl}/login`, {
-                method: "POST",
-                body: {
-                    username: username,
-                    email: email,
-                    password: password,
+            const { data, error } = await useFetch<LoginResponse>(
+                `${apiUrl}/login`,
+                {
+                    method: "POST",
+                    body: {
+                        username: username,
+                        email: email,
+                        password: password,
+                    },
                 },
-            });
+            );
 
             if (error.value) {
                 throw createError({
@@ -94,7 +99,6 @@ export const authStore = defineStore("auth", () => {
                 });
             }
             authToken.value = data.value.accessToken;
-
         } catch (error) {
             throw error;
         } finally {
@@ -108,14 +112,14 @@ export const authStore = defineStore("auth", () => {
     const logout = async () => {
         try {
             await useFetch(`${apiUrl}/logout`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${authToken.value}`
+                    Authorization: `Bearer ${authToken.value}`,
                 },
-                credentials: 'include'
+                credentials: "include",
             });
         } catch (error) {
-            throw error
+            throw error;
         } finally {
             authToken.value = "";
         }
@@ -128,25 +132,28 @@ export const authStore = defineStore("auth", () => {
     const refreshAuthToken = async (): Promise<Boolean> => {
         try {
             isLoading.value = true;
-            const {data, error} = await useFetch<LoginResponse>(`${apiUrl}/refresh`, {
-                method: 'POST',
-                credentials: 'include'
-            });
+            const { data, error } = await useFetch<LoginResponse>(
+                `${apiUrl}/refresh`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                },
+            );
             if (error.value) {
                 if (error.value?.statusCode === 401) {
                     logout();
                 }
-                throw error
+                throw error;
             }
             if (data.value) {
                 authToken.value = data.value.accessToken;
-                return true
+                return true;
             }
-            return false
-        } catch(error){
-            throw error
+            return false;
+        } catch (error) {
+            throw error;
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
     };
 
@@ -157,9 +164,12 @@ export const authStore = defineStore("auth", () => {
     const getProfile = async (): Promise<UserProfile> => {
         try {
             isLoading.value = true;
-            const {data} = await authenticatedFetch<UserProfile>(`${apiUrl}/profile`, {
-                method: 'GET'
-            });
+            const { data } = await authenticatedFetch<UserProfile>(
+                `${apiUrl}/profile`,
+                {
+                    method: "GET",
+                },
+            );
 
             if (data.value) {
                 return data.value;
@@ -170,7 +180,7 @@ export const authStore = defineStore("auth", () => {
                 });
             }
         } catch (error) {
-            throw error
+            throw error;
         } finally {
             isLoading.value = false;
         }
@@ -181,16 +191,22 @@ export const authStore = defineStore("auth", () => {
      * @param newName new username.
      * @param newEmail new email address.
      */
-    const updateProfile = async (newName: string | null, newEmail: string | null) => {
+    const updateProfile = async (
+        newName: string | null,
+        newEmail: string | null,
+    ) => {
         try {
             isLoading.value = true;
-            const {data, error} = await authenticatedFetch<LoginResponse>(`${apiUrl}`, {
-                method: 'PUT',
-                body: {
-                    email: newEmail,
-                    name: newName
-                }
-            });
+            const { data, error } = await authenticatedFetch<LoginResponse>(
+                `${apiUrl}`,
+                {
+                    method: "PUT",
+                    body: {
+                        email: newEmail,
+                        name: newName,
+                    },
+                },
+            );
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode,
@@ -201,11 +217,11 @@ export const authStore = defineStore("auth", () => {
                 authToken.value = data.value.accessToken;
             }
         } catch (error) {
-            throw error
+            throw error;
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
-    }
+    };
 
     /**
      * Update user password.
@@ -215,13 +231,16 @@ export const authStore = defineStore("auth", () => {
     const updatePassword = async (oldPassword: string, newPassword: string) => {
         try {
             isLoading.value = true;
-            const {data, error} = await authenticatedFetch<LoginResponse>(`${apiUrl}/password-change`, {
-                method: 'PUT',
-                body: {
-                    oldPassword: oldPassword,
-                    newPassword: newPassword
-                    }
-            });
+            const { data, error } = await authenticatedFetch<LoginResponse>(
+                `${apiUrl}/password-change`,
+                {
+                    method: "PUT",
+                    body: {
+                        oldPassword: oldPassword,
+                        newPassword: newPassword,
+                    },
+                },
+            );
 
             if (error.value) {
                 throw createError({
@@ -229,7 +248,7 @@ export const authStore = defineStore("auth", () => {
                     statusMessage: error.value.message,
                 });
             }
-            if(data.value) {
+            if (data.value) {
                 authToken.value = data.value.accessToken;
             }
         } catch (error) {
@@ -237,7 +256,7 @@ export const authStore = defineStore("auth", () => {
         } finally {
             isLoading.value = false;
         }
-    }
+    };
 
     /**
      * Request the API for a password reset.
@@ -246,12 +265,15 @@ export const authStore = defineStore("auth", () => {
     const makePasswordResetRequest = async (email: string) => {
         try {
             isLoading.value = true;
-            const {error} = await authenticatedFetch(`${apiUrl}/forgot-password`, {
-                method: 'POST',
-                body: {
-                    email: email,
-                    }
-            });
+            const { error } = await authenticatedFetch(
+                `${apiUrl}/forgot-password`,
+                {
+                    method: "POST",
+                    body: {
+                        email: email,
+                    },
+                },
+            );
 
             if (error.value) {
                 throw createError({
@@ -264,7 +286,7 @@ export const authStore = defineStore("auth", () => {
         } finally {
             isLoading.value = false;
         }
-    }
+    };
 
     return {
         authToken: readonly(authToken),
