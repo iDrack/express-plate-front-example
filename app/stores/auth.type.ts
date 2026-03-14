@@ -1,5 +1,8 @@
 export interface LoginResponse {
-    accessToken: string;
+    status: string;
+    data: {
+        accessToken: string;
+    };
 }
 
 export interface UserProfile {
@@ -7,4 +10,9 @@ export interface UserProfile {
     username: string;
     email: string;
     role: string;
+}
+
+export interface UserProfileResponse {
+    status: "string";
+    data: UserProfile;
 }

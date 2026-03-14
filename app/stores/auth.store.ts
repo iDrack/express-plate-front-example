@@ -1,4 +1,4 @@
-import type { LoginResponse, UserProfile } from "./auth.type";
+import type { LoginResponse, UserProfile, UserProfileResponse } from "./auth.type";
 import { useAuthenticatedFetch } from "~/composables/authenticatedFetch";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -9,28 +9,31 @@ export const useAuthStore = defineStore("auth", () => {
 
     /**
      * Create user account and log in, storing it's authToken.
-     * @param username
+     * @param name
      * @param email
      * @param password
      */
     const register = async (
-        username: string,
+        name: string,
         email: string,
         password: string,
     ) => {
         try {
             isLoading.value = true;
-            const { data, error } = useFetch<LoginResponse>(
+            if (authToken.value !== "") {
+                await logout();
+            }
+            const { data, error } = await useFetch<LoginResponse>(
                 `${apiUrl}/register`,
                 {
                     method: "POST",
                     body: {
-                        username: username,
+                        name: name,
                         email: email,
                         password: password,
                     },
                 },
-            );
+            );            
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode || 500,
@@ -38,13 +41,14 @@ export const useAuthStore = defineStore("auth", () => {
                         error.value.message || "Error while creating account.",
                 });
             }
-            if (!data.value) {
+            if (!data.value?.data) {
                 throw createError({
                     statusCode: 500,
                     statusMessage: "Error while creating account.",
                 });
             }
-            authToken.value = data.value.accessToken;
+            authToken.value = data.value.data.accessToken;
+            
         } catch (error) {
             throw error;
         } finally {
@@ -54,16 +58,16 @@ export const useAuthStore = defineStore("auth", () => {
 
     /**
      * Log the user and fetch it's auth token.
-     * @param username
+     * @param name
      * @param email
      * @param password
      */
     const login = async (
-        username: string | null,
+        name: string | null,
         email: string | null,
         password: string,
     ) => {
-        if (!username && !email) {
+        if (!name && !email) {
             throw createError({
                 statusMessage:
                     "You need to specify an e-mai or a username to log in.",
@@ -78,7 +82,7 @@ export const useAuthStore = defineStore("auth", () => {
                 {
                     method: "POST",
                     body: {
-                        username: username,
+                        name: name,
                         email: email,
                         password: password,
                     },
@@ -92,13 +96,13 @@ export const useAuthStore = defineStore("auth", () => {
                 });
             }
 
-            if (!data.value) {
+            if (!data.value?.data) {
                 throw createError({
                     statusCode: 500,
                     statusMessage: "No data available",
                 });
             }
-            authToken.value = data.value.accessToken;
+            authToken.value = data.value.data.accessToken;
         } catch (error) {
             throw error;
         } finally {
@@ -145,8 +149,8 @@ export const useAuthStore = defineStore("auth", () => {
                 }
                 throw error;
             }
-            if (data.value) {
-                authToken.value = data.value.accessToken;
+            if (data.value?.data) {
+                authToken.value = data.value.data.accessToken;
                 return true;
             }
             return false;
@@ -164,15 +168,15 @@ export const useAuthStore = defineStore("auth", () => {
     const getProfile = async (): Promise<UserProfile> => {
         try {
             isLoading.value = true;
-            const { data } = await authenticatedFetch<UserProfile>(
+            const { data } = await authenticatedFetch<UserProfileResponse>(
                 `${apiUrl}/profile`,
                 {
                     method: "GET",
                 },
             );
 
-            if (data.value) {
-                return data.value;
+            if (data.value?.data) {
+                return data.value.data;
             } else {
                 throw createError({
                     statusCode: 400,
@@ -213,8 +217,8 @@ export const useAuthStore = defineStore("auth", () => {
                     statusMessage: error.value.message,
                 });
             }
-            if (data.value) {
-                authToken.value = data.value.accessToken;
+            if (data.value?.data) {
+                authToken.value = data.value.data.accessToken;
             }
         } catch (error) {
             throw error;
@@ -248,8 +252,8 @@ export const useAuthStore = defineStore("auth", () => {
                     statusMessage: error.value.message,
                 });
             }
-            if (data.value) {
-                authToken.value = data.value.accessToken;
+            if (data.value?.data) {
+                authToken.value = data.value.data.accessToken;
             }
         } catch (error) {
             throw error;
