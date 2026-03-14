@@ -7,7 +7,8 @@ export default defineNuxtConfig({
         },
     },
     devtools: { enabled: true },
-    modules: ["@pinia/nuxt"],
+    modules: ["@pinia/nuxt", "@nuxt/ui"],
+    css: ["~/assets/css/main.css"],
     pinia: {
         storesDirs: ["app/stores/**"],
     },
