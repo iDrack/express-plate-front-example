@@ -56,25 +56,32 @@ const submitRegister = (onEvent: FormSubmitEvent<RegisterSchema>) => {
 </script>
 
 <template>
-    <h2 class="my-4">Register</h2>
-    <UForm :schema="registerSchema" :state="registerState" class="space-y-4" @submit="submitRegister">
-        <UFormField label="Username" name="username">
-            <UInput v-model="registerState.name" type="text" />
-        </UFormField>
+    <div class="h-full flex flex-col">
+        <h2 class="mb-4 text-center">Register</h2>
+        <UForm :schema="registerSchema" :state="registerState" class="flex flex-col flex-1" @submit="submitRegister">
+            <div class="space-y-4 flex-1">
+                <UFormField label="Username" name="username">
+                    <UInput v-model="registerState.name" type="text" />
+                </UFormField>
 
-        <UFormField label="Email" name="email">
-            <UInput v-model="registerState.email" type="email" />
-        </UFormField>
+                <UFormField label="Email" name="email">
+                    <UInput v-model="registerState.email" type="email" />
+                </UFormField>
 
-        <UFormField label="Password" name="password">
-            <UInput v-model="registerState.password" type="password" />
-        </UFormField>
+                <UFormField label="Password" name="password">
+                    <UInput v-model="registerState.password" type="password" />
+                </UFormField>
 
-        <UFormField label="Retype your Password" name="passwordCheck">
-            <UInput v-model="registerState.passwordCheck" type="password" />
-        </UFormField>
-        <UButton type="submit" label="Register" icon="mdi-plus" />
-    </UForm>
+                <UFormField label="Retype your Password" name="passwordCheck">
+                    <UInput v-model="registerState.passwordCheck" type="password" />
+                </UFormField>
+            </div>
+            <div class="mt-auto pt-4 flex justify-center">
+                <UButton type="submit" label="Register" icon="mdi-plus" />
+            </div>
+        </UForm>
+    </div>
+
 </template>
 
 <style scoped></style>

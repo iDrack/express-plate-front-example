@@ -88,21 +88,30 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
 </script>
 
 <template>
-    <h2 class="my-4">Login</h2>
-    <UForm :schema="loginSchema" :state="loginState" class="space-y-4" @submit="submitLogin">
-        <UFormField label="Username" name="username">
-            <UInput v-model="loginState.name" type="text" />
-        </UFormField>
+    <div class="h-full flex flex-col">
+        <h2 class="mb-4 text-center">Login</h2>
+        <UForm :schema="loginSchema" :state="loginState" class="flex flex-col flex-1" @submit="submitLogin">
+            <div class="space-y-4 flex-1">
+                <UFormField label="Username" name="username">
+                    <UInput v-model="loginState.name" type="text" />
+                </UFormField>
 
-        <UFormField label="Email" name="email">
-            <UInput v-model="loginState.email" type="email" />
-        </UFormField>
+                <UFormField label="Email" name="email">
+                    <UInput v-model="loginState.email" type="email" />
+                </UFormField>
 
-        <UFormField label="Password" name="password">
-            <UInput v-model="loginState.password" type="password" />
-        </UFormField>
-        <UButton type="submit" label="Login" icon="mdi-login" />
-    </UForm>
+                <UFormField label="Password" name="password">
+                    <UInput v-model="loginState.password" type="password" />
+                </UFormField>
+                <ULink as="button" to="/authentification/password/Request" class="flex justify-center">
+                    Forgot your password ?
+                </ULink>
+            </div>
+            <div class="mt-auto pt-4 flex justify-center">
+                <UButton type="submit" label="Login" icon="mdi-login" />
+            </div>
+        </UForm>
+    </div>
 </template>
 
 <style scoped></style>

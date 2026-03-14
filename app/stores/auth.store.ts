@@ -1,4 +1,8 @@
-import type { LoginResponse, UserProfile, UserProfileResponse } from "./auth.type";
+import type {
+    LoginResponse,
+    UserProfile,
+    UserProfileResponse,
+} from "./auth.type";
 import { useAuthenticatedFetch } from "~/composables/authenticatedFetch";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -6,6 +10,7 @@ export const useAuthStore = defineStore("auth", () => {
     const apiUrl = `${useRuntimeConfig().public.apiUrl}/users`;
     const isLoading = ref(false);
     const authToken = ref("");
+    const profile = ref();
 
     /**
      * Create user account and log in, storing it's authToken.
@@ -13,11 +18,7 @@ export const useAuthStore = defineStore("auth", () => {
      * @param email
      * @param password
      */
-    const register = async (
-        name: string,
-        email: string,
-        password: string,
-    ) => {
+    const register = async (name: string, email: string, password: string) => {
         try {
             isLoading.value = true;
             if (authToken.value !== "") {
@@ -33,7 +34,7 @@ export const useAuthStore = defineStore("auth", () => {
                         password: password,
                     },
                 },
-            );            
+            );
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode || 500,
@@ -48,7 +49,7 @@ export const useAuthStore = defineStore("auth", () => {
                 });
             }
             authToken.value = data.value.data.accessToken;
-            
+            await getProfile();
         } catch (error) {
             throw error;
         } finally {
@@ -103,6 +104,7 @@ export const useAuthStore = defineStore("auth", () => {
                 });
             }
             authToken.value = data.value.data.accessToken;
+            await getProfile();
         } catch (error) {
             throw error;
         } finally {
@@ -126,6 +128,7 @@ export const useAuthStore = defineStore("auth", () => {
             throw error;
         } finally {
             authToken.value = "";
+            profile.value = null;
         }
     };
 
@@ -165,7 +168,7 @@ export const useAuthStore = defineStore("auth", () => {
      * Fetch the user profile.
      * @returns User profile.
      */
-    const getProfile = async (): Promise<UserProfile> => {
+    const getProfile = async () => {
         try {
             isLoading.value = true;
             const { data } = await authenticatedFetch<UserProfileResponse>(
@@ -176,6 +179,7 @@ export const useAuthStore = defineStore("auth", () => {
             );
 
             if (data.value?.data) {
+                profile.value = data.value.data;
                 return data.value.data;
             } else {
                 throw createError({
@@ -219,6 +223,7 @@ export const useAuthStore = defineStore("auth", () => {
             }
             if (data.value?.data) {
                 authToken.value = data.value.data.accessToken;
+                await getProfile();
             }
         } catch (error) {
             throw error;
@@ -294,6 +299,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     return {
         authToken: readonly(authToken),
+        profile: readonly(profile),
         isLoading: readonly(isLoading),
         register,
         login,
