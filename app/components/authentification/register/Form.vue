@@ -57,7 +57,7 @@ const submitRegister = (onEvent: FormSubmitEvent<RegisterSchema>) => {
 
 <template>
     <div class="h-full flex flex-col">
-        <h2 class="mb-4 text-center">Register</h2>
+        <h1 class="mb-4 text-center text-xl">Register</h1>
         <UForm :schema="registerSchema" :state="registerState" class="flex flex-col flex-1" @submit="submitRegister">
             <div class="space-y-4 flex-1">
                 <UFormField label="Username" name="username">

@@ -72,7 +72,7 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
 
 <template>
     <div class="h-full flex flex-col">
-        <h2 class="mb-4 text-center">Login</h2>
+        <h1 class="mb-4 text-center text-xl">Login</h1>
         <UForm :schema="loginSchema" :state="loginState" class="flex flex-col flex-1" @submit="submitLogin">
             <div class="space-y-4 flex-1">
                 <UFormField label="Username" name="username">
