@@ -5,11 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node-terminal",
-            "name": "Run Script: dev",
-            "request": "launch",
-            "command": "npm run dev -- -o",
-            "cwd": "${workspaceFolder}",
-        }
+        "type": "node",
+        "request": "launch",
+        "name": "Run script: dev",
+        "runtimeExecutable": "zsh",
+        "runtimeArgs": ["-lc", "HISTFILE=/dev/null npm run dev -- -o"],
+        "console": "integratedTerminal",
+        "restart": true,
+        },
     ]
 }
