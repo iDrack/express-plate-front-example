@@ -1,3 +1,8 @@
+export interface MessageResponse {
+    status: string;
+    message: string;
+}
+
 export interface LoginResponse {
     status: string;
     data: {

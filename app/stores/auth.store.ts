@@ -1,5 +1,6 @@
 import type {
     LoginResponse,
+    MessageResponse,
     UserProfile,
     UserProfileResponse,
 } from "./auth.type";
@@ -29,9 +30,9 @@ export const useAuthStore = defineStore("auth", () => {
                 {
                     method: "POST",
                     body: {
-                        name: name,
-                        email: email,
-                        password: password,
+                        name: name.trim(),
+                        email: email.toLowerCase().trim(),
+                        password: password.trim(),
                     },
                 },
             );
@@ -83,9 +84,9 @@ export const useAuthStore = defineStore("auth", () => {
                 {
                     method: "POST",
                     body: {
-                        name: name,
-                        email: email,
-                        password: password,
+                        name: name?.trim(),
+                        email: email?.toLowerCase().trim(),
+                        password: password.trim(),
                     },
                 },
             );
@@ -210,8 +211,8 @@ export const useAuthStore = defineStore("auth", () => {
                 {
                     method: "PUT",
                     body: {
-                        email: newEmail,
-                        name: newName,
+                        email: newEmail?.toLowerCase().trim(),
+                        name: newName?.trim(),
                     },
                 },
             );
@@ -274,12 +275,11 @@ export const useAuthStore = defineStore("auth", () => {
     const makePasswordResetRequest = async (email: string) => {
         try {
             isLoading.value = true;
-            const { error } = await authenticatedFetch(
-                `${apiUrl}/forgot-password`,
+            const { data, error } = await useFetch<MessageResponse>(`${apiUrl}/forgot-password`,
                 {
                     method: "POST",
                     body: {
-                        email: email,
+                        email: email.toLowerCase().trim(),
                     },
                 },
             );
@@ -289,6 +289,10 @@ export const useAuthStore = defineStore("auth", () => {
                     statusCode: error.value.statusCode,
                     statusMessage: error.value.message,
                 });
+            }
+
+            if (data.value?.message) {
+                return data.value.message;
             }
         } catch (error) {
             throw error;

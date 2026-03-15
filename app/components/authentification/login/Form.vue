@@ -2,6 +2,7 @@
 import { useAuthStore } from "~/stores/auth.store";
 import * as v from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import RequestModal from "../password/RequestModal.vue";
 
 const loginSchema = v.union([
     v.object({
@@ -40,25 +41,7 @@ const loginSchema = v.union([
             v.trim(),
         ),
     })
-])
-
-
-v.object({
-    name: v.pipe(
-        v.string(),
-        v.trim(),
-        v.minLength(3, 'Your username must contain at least 3 characters')
-    ),
-    email: v.pipe(
-        v.string(),
-        v.trim(),
-        v.email('Your email address is badly formatted.')
-    ),
-    password: v.pipe(
-        v.string(),
-        v.trim(),
-    ),
-});
+]);
 
 type LoginSchema = v.InferOutput<typeof loginSchema>;
 
@@ -74,7 +57,7 @@ const toast = useToast();
 
 const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
     try {
-        authStore.login(loginState.name.trim(), loginState.email.trim(), loginState.password.trim());
+        authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
         toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success' });
     } catch (error) {
         if (isNuxtError(error)) {
@@ -103,9 +86,16 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
                 <UFormField label="Password" name="password">
                     <UInput v-model="loginState.password" type="password" />
                 </UFormField>
-                <ULink as="button" to="/authentification/password/Request" class="flex justify-center">
-                    Forgot your password ?
-                </ULink>
+
+                <div class="flex justify-center">
+                    <UModal title="Reset your password.">
+                        <UButton variant="link" label="Forgot your password ?" />
+                        <template #body>
+                            <RequestModal />
+                        </template>
+                    </UModal>
+                </div>
+
             </div>
             <div class="mt-auto pt-4 flex justify-center">
                 <UButton type="submit" label="Login" icon="mdi-login" />
