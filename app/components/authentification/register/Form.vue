@@ -52,24 +52,26 @@ const submitRegister = (onEvent: FormSubmitEvent<RegisterSchema>) => {
 </script>
 
 <template>
-    <div class="h-full flex flex-col">
+    <div class="w-full h-full flex flex-col">
         <h1 class="mb-4 text-center text-xl">Register</h1>
         <UForm :schema="registerSchema" :state="registerState" class="flex flex-col flex-1" @submit="submitRegister">
-            <div class="space-y-4 flex-1">
-                <UFormField label="Username" name="username">
-                    <UInput v-model="registerState.name" type="text" />
+            <div class="mx-12 space-y-4 flex-1">
+                <UFormField label="Username" name="username" class="flex-1">
+                    <UInput v-model="registerState.name" type="text" class="w-full" />
                 </UFormField>
 
-                <UFormField label="Email" name="email">
-                    <UInput v-model="registerState.email" type="email" />
+                <UFormField label="Email" name="email" class="flex-1">
+                    <UInput v-model="registerState.email" type="email" class="w-full" />
                 </UFormField>
 
-                <UFormField label="Password" name="password">
-                    <UInput v-model="registerState.password" type="password" />
+                <UFormField label="Password" name="password" class="flex-1"
+                    :ui="{ error: 'block min-h-10 whitespace-normal break-words' }">
+                    <UInput v-model="registerState.password" type="password" class="w-full" />
                 </UFormField>
 
-                <UFormField label="Retype your Password" name="passwordCheck">
-                    <UInput v-model="registerState.passwordCheck" type="password" />
+                <UFormField label="Retype your Password" name="passwordCheck" class="flex-1"
+                    :ui="{ error: 'block min-h-10 whitespace-normal break-words' }">
+                    <UInput v-model="registerState.passwordCheck" type="password" class="w-full" />
                 </UFormField>
             </div>
             <div class="mt-auto pt-4 flex justify-center">

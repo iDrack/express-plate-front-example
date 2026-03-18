@@ -67,20 +67,20 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
 </script>
 
 <template>
-    <div class="h-full flex flex-col">
+    <div class="w-full h-full flex flex-col">
         <h1 class="mb-4 text-center text-xl">Login</h1>
         <UForm :schema="loginSchema" :state="loginState" class="flex flex-col flex-1" @submit="submitLogin">
-            <div class="space-y-4 flex-1">
-                <UFormField label="Username" name="username">
-                    <UInput v-model="loginState.name" type="text" />
+            <div class="mx-12 space-y-4 flex-1">
+                <UFormField label="Username" name="username" class="flex-1">
+                    <UInput v-model="loginState.name" type="text" class="w-full" />
                 </UFormField>
 
-                <UFormField label="Email" name="email">
-                    <UInput v-model="loginState.email" type="email" />
+                <UFormField label="Email" name="email" class="flex-1">
+                    <UInput v-model="loginState.email" type="email" class="w-full" />
                 </UFormField>
 
-                <UFormField label="Password" name="password">
-                    <UInput v-model="loginState.password" type="password" />
+                <UFormField label="Password" name="password" class="flex-1">
+                    <UInput v-model="loginState.password" type="password" class="w-full" />
                 </UFormField>
 
                 <div class="flex justify-center">
