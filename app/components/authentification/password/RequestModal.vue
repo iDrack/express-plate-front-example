@@ -7,7 +7,7 @@ const passwordResetRequestSchema = v.object({
     email: v.pipe(
         v.string(),
         v.trim(),
-        v.email('Your email address is badly formatted.')
+        v.email('Please provide a correct e-mail address.')
     ),
 });
 
@@ -36,13 +36,16 @@ const submitRequest = async (onEvent: FormSubmitEvent<PasswordResetRequestSchema
 
 <template>
     <div class="h-full flex flex-col">
+        <p class="mb-6 text-sm">We'll try to find your account via the e-mail address you provide us and send you instructions on how to reset
+            your password.</p>
         <div class="space-y-4 flex-1 ">
-            <UForm :schema="passwordResetRequestSchema" :state="passwordResetRequestState" class="flex flex-col flex-1 space-y-4" @submit="submitRequest">
+            <UForm :schema="passwordResetRequestSchema" :state="passwordResetRequestState"
+                class="flex flex-col flex-1 space-y-4" @submit="submitRequest">
                 <UFormField label="Email" name="email">
                     <UInput v-model="passwordResetRequestState.email" type="email" />
                 </UFormField>
                 <div class="space-y-4">
-                    <UButton type="submit" label="Send reset link" icon="mdi-send"/>
+                    <UButton type="submit" label="Send reset link" icon="mdi-send" />
                 </div>
             </UForm>
         </div>

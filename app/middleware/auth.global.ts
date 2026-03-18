@@ -6,3 +6,6 @@
     - If the session is invalid : logout the user and redirect the user to the login page
     - If the session is valid : accept the request
 */
+export default defineNuxtRouteMiddleware((to, from) => {
+    
+});

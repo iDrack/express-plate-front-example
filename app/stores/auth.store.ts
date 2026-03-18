@@ -301,6 +301,35 @@ export const useAuthStore = defineStore("auth", () => {
         }
     };
 
+    const passwordReset = async (token: string, password: string) => {
+        try {
+            isLoading.value = true;
+                const { data, error } = await useFetch<MessageResponse>(`${apiUrl}/password-reset`,
+                {
+                    method: "PUT",
+                    body: {
+                        token: token,
+                        password: password.trim(),
+                    },
+                },
+            );
+            if (error.value) {
+                throw createError({
+                    statusCode: error.value.statusCode,
+                    statusMessage: error.value.message,
+                });
+            }
+
+            if (data.value?.message) {
+                return data.value.message;
+            }
+        } catch (error) {
+            throw error
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         authToken: readonly(authToken),
         profile: readonly(profile),
@@ -313,5 +342,6 @@ export const useAuthStore = defineStore("auth", () => {
         updateProfile,
         updatePassword,
         makePasswordResetRequest,
+        passwordReset,
     };
 });
