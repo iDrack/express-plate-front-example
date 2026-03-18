@@ -38,9 +38,9 @@ export const useAuthStore = defineStore("auth", () => {
             );
             if (error.value) {
                 throw createError({
-                    statusCode: error.value.statusCode || 500,
+                    statusCode: error.value.statusCode,
                     statusMessage:
-                        error.value.message || "Error while creating account.",
+                        error.value.data.message || error.value.statusMessage,
                 });
             }
             if (!data.value?.data) {
@@ -71,9 +71,9 @@ export const useAuthStore = defineStore("auth", () => {
     ) => {
         if (!name && !email) {
             throw createError({
+                statusCode: 400,
                 statusMessage:
                     "You need to specify an e-mai or a username to log in.",
-                statusCode: 400,
             });
         }
         try {
@@ -93,15 +93,16 @@ export const useAuthStore = defineStore("auth", () => {
 
             if (error.value) {
                 throw createError({
-                    statusCode: error.value.statusCode || 500,
-                    statusMessage: error.value.message || "Login error",
+                    statusCode: error.value.statusCode,
+                    statusMessage:
+                        error.value.data.message || error.value.statusMessage,
                 });
             }
 
             if (!data.value?.data) {
                 throw createError({
                     statusCode: 500,
-                    statusMessage: "No data available",
+                    statusMessage: "No data available.",
                 });
             }
             authToken.value = data.value.data.accessToken;
@@ -151,7 +152,11 @@ export const useAuthStore = defineStore("auth", () => {
                 if (error.value?.statusCode === 401) {
                     logout();
                 }
-                throw error;
+                throw createError({
+                    statusCode: error.value.statusCode,
+                    statusMessage:
+                        error.value.data.message || error.value.statusMessage,
+                });
             }
             if (data.value?.data) {
                 authToken.value = data.value.data.accessToken;
@@ -185,7 +190,7 @@ export const useAuthStore = defineStore("auth", () => {
             } else {
                 throw createError({
                     statusCode: 400,
-                    statusMessage: "Unable to parse data.",
+                    statusMessage: "Unable to parse data",
                 });
             }
         } catch (error) {
@@ -219,7 +224,8 @@ export const useAuthStore = defineStore("auth", () => {
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode,
-                    statusMessage: error.value.message,
+                    statusMessage:
+                        error.value.data.message || error.value.statusMessage,
                 });
             }
             if (data.value?.data) {
@@ -251,11 +257,11 @@ export const useAuthStore = defineStore("auth", () => {
                     },
                 },
             );
-
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode,
-                    statusMessage: error.value.message,
+                    statusMessage:
+                        error.value.data.message || error.value.statusMessage,
                 });
             }
             if (data.value?.data) {
@@ -275,7 +281,8 @@ export const useAuthStore = defineStore("auth", () => {
     const makePasswordResetRequest = async (email: string) => {
         try {
             isLoading.value = true;
-            const { data, error } = await useFetch<MessageResponse>(`${apiUrl}/forgot-password`,
+            const { data, error } = await useFetch<MessageResponse>(
+                `${apiUrl}/forgot-password`,
                 {
                     method: "POST",
                     body: {
@@ -287,7 +294,44 @@ export const useAuthStore = defineStore("auth", () => {
             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode,
-                    statusMessage: error.value.message,
+                    statusMessage:
+                        error.value.data.message || error.value.statusMessage,
+                });
+            }
+            if (data.value?.message) {
+                return data.value.message;
+            }
+        } catch (error) {
+            throw error;
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    /**
+     *
+     * @param token
+     * @param password
+     * @returns
+     */
+    const passwordReset = async (token: string, password: string) => {
+        try {
+            isLoading.value = true;
+            const { data, error } = await useFetch<MessageResponse>(
+                `${apiUrl}/password-reset`,
+                {
+                    method: "PUT",
+                    body: {
+                        token: token,
+                        password: password.trim(),
+                    },
+                },
+            );
+            if (error.value) {
+                throw createError({
+                    statusCode: error.value.statusCode,
+                    statusMessage:
+                        error.value.data.message || error.value.statusMessage,
                 });
             }
 
@@ -300,35 +344,6 @@ export const useAuthStore = defineStore("auth", () => {
             isLoading.value = false;
         }
     };
-
-    const passwordReset = async (token: string, password: string) => {
-        try {
-            isLoading.value = true;
-                const { data, error } = await useFetch<MessageResponse>(`${apiUrl}/password-reset`,
-                {
-                    method: "PUT",
-                    body: {
-                        token: token,
-                        password: password.trim(),
-                    },
-                },
-            );
-            if (error.value) {
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage: error.value.message,
-                });
-            }
-
-            if (data.value?.message) {
-                return data.value.message;
-            }
-        } catch (error) {
-            throw error
-        } finally {
-            isLoading.value = false;
-        }
-    }
 
     return {
         authToken: readonly(authToken),

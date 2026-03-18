@@ -3,7 +3,6 @@ import { useAuthStore } from "~/stores/auth.store";
 import * as v from 'valibot';
 import type { FormSubmitEvent } from "@nuxt/ui";
 
-
 const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%&? "]).*$/;
 
 const registerSchema = v.object({
@@ -40,17 +39,14 @@ const registerState = reactive({
 
 const authStore = useAuthStore();
 const toast = useToast();
+const handleError = useHandleError();
 
 const submitRegister = (onEvent: FormSubmitEvent<RegisterSchema>) => {
     try {
         authStore.register(registerState.name.trim(), registerState.email.trim(), registerState.password.trim());
         toast.add({ title: 'Account created.', description: 'Your account has been registered.', color: 'success' });
     } catch (error) {
-        if (isNuxtError(error)) {
-            toast.add({ title: 'An error has occurred.', description: `${error.statusCode} : ${error.message}`, color: 'error' });
-        } else {
-            toast.add({ title: 'An error has occurred.', description: `${error}`, color: 'error' });
-        }
+        handleError(error, toast);
     }
 }
 </script>

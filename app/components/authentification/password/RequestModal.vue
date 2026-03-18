@@ -19,17 +19,14 @@ const passwordResetRequestState = reactive({
 
 const authStore = useAuthStore();
 const toast = useToast();
+const handleError = useHandleError();
 
 const submitRequest = async (onEvent: FormSubmitEvent<PasswordResetRequestSchema>) => {
     try {
         const response = await authStore.makePasswordResetRequest(passwordResetRequestState.email);
         toast.add({ title: 'Request sent.', description: `${response}`, color: 'success' })
     } catch (error) {
-        if (isNuxtError(error)) {
-            toast.add({ title: 'An error has occurred.', description: `${error.statusCode} : ${error.message}`, color: 'error' });
-        } else {
-            toast.add({ title: 'An error has occurred.', description: `${error}`, color: 'error' });
-        }
+        handleError(error, toast);
     }
 }
 </script>

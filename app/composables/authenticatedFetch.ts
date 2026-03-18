@@ -30,8 +30,14 @@ export const useAuthenticatedFetch = () => {
                     statusMessage: "Session expired.",
                 });
             }
+        } else if (response.error.value !== undefined) {
+            throw createError({
+                statusCode: response.error.value.statusCode,
+                statusMessage:
+                    response.error.value.data.message ||
+                    response.error.value.statusMessage,
+            });
         }
-
         return response;
     };
 };

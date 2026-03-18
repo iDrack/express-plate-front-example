@@ -51,21 +51,17 @@ const loginState = reactive({
     password: "",
 });
 
-
 const authStore = useAuthStore();
 const toast = useToast();
+const handleError = useHandleError();
 
 const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
     try {
         authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
         toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success' });
     } catch (error) {
-        if (isNuxtError(error)) {
-            toast.add({ title: 'An error has occurred.', description: `${error.statusCode} : ${error.message}`, color: 'error' });
-
-        } else {
-            toast.add({ title: 'An error has occurred.', description: `${error}`, color: 'error' });
-        }
+        //Handle different error types and toast content
+        handleError(error, toast);
     }
 }
 </script>
