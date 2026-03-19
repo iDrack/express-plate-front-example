@@ -3,7 +3,7 @@ import { useAuthStore } from "~/stores/auth.store";
 import * as v from 'valibot';
 import type { FormSubmitEvent } from "@nuxt/ui";
 
-const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%&? "]).*$/;
+const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[_#?!@$%^&*-]).{8,}$/;
 
 const registerSchema = v.object({
     name: v.pipe(

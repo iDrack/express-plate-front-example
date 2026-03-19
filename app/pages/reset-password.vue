@@ -8,7 +8,7 @@ definePageMeta({
 
 const route = useRoute()
 const token = computed(() => route.query.token as string)
-const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%&? "]).*$/;
+const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[_#?!@$%^&*-]).{8,}$/;
 
 const passwordChageSchema = v.object({
     password: v.pipe(
