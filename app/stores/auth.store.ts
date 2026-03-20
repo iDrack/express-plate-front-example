@@ -131,6 +131,8 @@ export const useAuthStore = defineStore("auth", () => {
         } finally {
             authToken.value = "";
             profile.value = null;
+            navigateTo('/')
+            useToast().add({ title: 'Disconnected', description: 'You have been disconnected.', color: 'info', icon: 'i-lucide-icon' })
         }
     };
 

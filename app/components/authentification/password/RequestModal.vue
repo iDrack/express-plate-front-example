@@ -42,7 +42,7 @@ const submitRequest = async (onEvent: FormSubmitEvent<PasswordResetRequestSchema
                     <UInput v-model="passwordResetRequestState.email" type="email" />
                 </UFormField>
                 <div class="space-y-4">
-                    <UButton type="submit" label="Send reset link" icon="mdi-send" />
+                    <UButton type="submit" label="Send reset link" icon="i-lucide-send" />
                 </div>
             </UForm>
         </div>
