@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <div class="my-4 px-16">
+    <div class="my-4 lg:px-16">
         <div class="flex flex-1 w-full mx-auto justify-between">
             <div class="flex space-x-4">
                 <div>
