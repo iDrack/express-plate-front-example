@@ -14,7 +14,6 @@ const authState = computed(() => ({
             <template #title>
                 Express-Plate
             </template>
-            <HeaderUserGreeting />
              <template #right>
                 <template v-if="authState.isLoading">
                 </template>
@@ -29,7 +28,7 @@ const authState = computed(() => ({
                 <HeaderActionsDefault/>
             </template>
         </UHeader>
-        <UContainer class="flex-1 flex items-center justify-center">
+        <UContainer class="flex-1 flex">
             <slot />
         </UContainer>
     </div>

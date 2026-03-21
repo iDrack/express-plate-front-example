@@ -46,30 +46,31 @@ const submitPasswordReset = async (onEvent: FormSubmitEvent<PasswordChageSchema>
 }
 </script>
 <template>
-    <div class="flex flex-col pb-0 lg:pb-24">
-        <div class="w-full max-w-sm h-full flex flex-col">
-            <h1 class="mb-4 text-center text-2xl font-bold">Set new password</h1>
-            <p class="text-sm text-center">Your new password must be different from previously used passwords.</p>
-            <UForm :schema="passwordChageSchema" :state="passwordState" class="w-full flex flex-col flex-1 pt-6"
-                @submit="submitPasswordReset">
-                <div class="space-y-4 flex-1 items-start">
-                    <UFormField label="Password" name="password" class="flex-1">
-                        <UInput v-model="passwordState.password" type="password" class="w-full" :autofocus="true"/>
-                    </UFormField>
-                    <UFormField label="Retype your Password" name="passwordCheck" class="flex-1">
-                        <UInput v-model="passwordState.passwordCheck" type="password" class="w-full" />
-                    </UFormField>
-                    <div class="flex justify-center">
-                        <ULink to="/register" as="button" class="text-center">Go back to register page.</ULink>
+    <div class="flex-1 flex items-center justify-center">
+        <div class="flex flex-col pb-0 lg:pb-24">
+            <div class="w-full max-w-sm h-full flex flex-col">
+                <h1 class="mb-4 text-center text-2xl font-bold">Set new password</h1>
+                <p class="text-sm text-center">Your new password must be different from previously used passwords.</p>
+                <UForm :schema="passwordChageSchema" :state="passwordState" class="w-full flex flex-col flex-1 pt-6"
+                    @submit="submitPasswordReset">
+                    <div class="space-y-4 flex-1 items-start">
+                        <UFormField label="Password" name="password" class="flex-1">
+                            <UInput v-model="passwordState.password" type="password" class="w-full" :autofocus="true" />
+                        </UFormField>
+                        <UFormField label="Retype your Password" name="passwordCheck" class="flex-1">
+                            <UInput v-model="passwordState.passwordCheck" type="password" class="w-full" />
+                        </UFormField>
+                        <div class="flex justify-center">
+                            <ULink to="/register" as="button" class="text-center">Go back to register page.</ULink>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-auto pt-4 flex justify-center">
-                    <UButton loading-auto type="submit" label="Submit" icon="i-lucide-send" />
-                </div>
-            </UForm>
+                    <div class="mt-auto pt-4 flex justify-center">
+                        <UButton loading-auto type="submit" label="Submit" icon="i-lucide-send" />
+                    </div>
+                </UForm>
+            </div>
         </div>
     </div>
-
 </template>
 
 <style scoped></style>

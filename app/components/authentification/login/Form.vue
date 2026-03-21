@@ -2,7 +2,7 @@
 import { useAuthStore } from "~/stores/auth.store";
 import * as v from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui";
-import RequestModal from "../password/RequestModal.vue";
+import RequestModal from "../password/ResetRequest.vue";
 
 const loginSchema = v.union([
     v.object({
@@ -59,11 +59,8 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
     try {
         await authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
         toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success' });
-        navigateTo('/');
+        navigateTo('/profile');
     } catch (error) {
-        //Handle different error types and toast content
-        console.log(error);
-        
         handleError(error, toast);
     }
 }
@@ -90,7 +87,7 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
                     <UModal title="Reset your password.">
                         <UButton variant="link" label="Forgot your password ?" />
                         <template #body>
-                            <RequestModal />
+                            <AuthentificationPasswordResetRequest />
                         </template>
                     </UModal>
                 </div>
