@@ -5,15 +5,16 @@ import type {
     UserProfileResponse,
 } from "./auth.type";
 import { useAuthenticatedFetch } from "~/composables/authenticatedFetch";
+import type { FetchError } from "ofetch";
 
 export const useAuthStore = defineStore("auth", () => {
     const authenticatedFetch = useAuthenticatedFetch();
     const apiUrl = `${useRuntimeConfig().public.apiUrl}/users`;
     const isLoading = ref(false);
     const authToken = ref("");
-    const profile = ref();
+    const profile = ref<UserProfile | null>(null);
     const isAuthenticated = computed(() => {
-        return !!authToken.value && !!profile.value
+        return !!authToken.value && !!profile.value;
     });
 
     /**
@@ -28,35 +29,26 @@ export const useAuthStore = defineStore("auth", () => {
             if (authToken.value !== "") {
                 await logout();
             }
-            const { data, error } = await useFetch<LoginResponse>(
-                `${apiUrl}/register`,
-                {
-                    method: "POST",
-                    credentials: 'include',
-                    body: {
-                        name: name.trim(),
-                        email: email.toLowerCase().trim(),
-                        password: password.trim(),
-                    },
+            const response = await $fetch<LoginResponse>(`${apiUrl}/register`, {
+                method: "POST",
+                credentials: "include",
+                body: {
+                    name: name.trim(),
+                    email: email.toLowerCase().trim(),
+                    password: password.trim(),
                 },
-            );
-            if (error.value) {
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage:
-                        error.value.data.message || error.value.statusMessage,
-                });
-            }
-            if (!data.value?.data) {
-                throw createError({
-                    statusCode: 500,
-                    statusMessage: "Error while creating account.",
-                });
-            }
-            authToken.value = data.value.data.accessToken;
+            });
+            authToken.value = response.data.accessToken;
             await getProfile();
         } catch (error) {
-            throw error;
+            const fetchError = error as FetchError;
+            throw createError({
+                statusCode: fetchError.statusCode || 500,
+                statusMessage:
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
+            });
         } finally {
             isLoading.value = false;
         }
@@ -83,37 +75,26 @@ export const useAuthStore = defineStore("auth", () => {
         try {
             isLoading.value = true;
 
-            const { data, error } = await useFetch<LoginResponse>(
-                `${apiUrl}/login`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                    body: {
-                        name: name?.trim(),
-                        email: email?.toLowerCase().trim(),
-                        password: password.trim(),
-                    },
+            const response = await $fetch<LoginResponse>(`${apiUrl}/login`, {
+                method: "POST",
+                credentials: "include",
+                body: {
+                    name: name?.trim(),
+                    email: email?.toLowerCase().trim(),
+                    password: password.trim(),
                 },
-            );
-
-            if (error.value) {
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage:
-                        error.value.data.message || error.value.statusMessage,
-                });
-            }
-
-            if (!data.value?.data) {
-                throw createError({
-                    statusCode: 500,
-                    statusMessage: "No data available.",
-                });
-            }
-            authToken.value = data.value.data.accessToken;
+            });
+            authToken.value = response.data.accessToken;
             await getProfile();
         } catch (error) {
-            throw error;
+            const fetchError = error as FetchError;
+            throw createError({
+                statusCode: fetchError.statusCode || 500,
+                statusMessage:
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
+            });
         } finally {
             isLoading.value = false;
         }
@@ -124,7 +105,7 @@ export const useAuthStore = defineStore("auth", () => {
      */
     const logout = async () => {
         try {
-            await useFetch(`${apiUrl}/logout`, {
+            await $fetch(`${apiUrl}/logout`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${authToken.value}`,
@@ -132,14 +113,26 @@ export const useAuthStore = defineStore("auth", () => {
                 credentials: "include",
             });
         } catch (error) {
-            throw error;
+            const fetchError = error as FetchError;
+            throw createError({
+                statusCode: fetchError.statusCode || 500,
+                statusMessage:
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
+            });
         } finally {
             authToken.value = "";
             profile.value = null;
-            const refreshToken = useCookie('refreshToken')
+            const refreshToken = useCookie("refreshToken");
             refreshToken.value = null;
-            navigateTo('/')
-            useToast().add({ title: 'Disconnected', description: 'You have been disconnected.', color: 'info', icon: 'i-lucide-icon' })
+            navigateTo("/");
+            useToast().add({
+                title: "Disconnected",
+                description: "You have been disconnected.",
+                color: "info",
+                icon: "i-lucide-icon",
+            });
         }
     };
 
@@ -150,30 +143,24 @@ export const useAuthStore = defineStore("auth", () => {
     const refreshAuthToken = async (): Promise<Boolean> => {
         try {
             isLoading.value = true;
-            const { data, error } = await useFetch<LoginResponse>(
-                `${apiUrl}/refresh`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                },
-            );
-            if (error.value) {
-                if (error.value?.statusCode === 401) {
-                    logout();
-                }
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage:
-                        error.value.data.message || error.value.statusMessage,
-                });
-            }
-            if (data.value?.data) {
-                authToken.value = data.value.data.accessToken;
+            const response = await $fetch<LoginResponse>(`${apiUrl}/refresh`, {
+                method: "POST",
+                credentials: "include",
+            });
+            if (response.data) {
+                authToken.value = response.data.accessToken;
                 return true;
             }
             return false;
         } catch (error) {
-            throw error;
+            const fetchError = error as FetchError;
+            throw createError({
+                statusCode: fetchError.statusCode || 500,
+                statusMessage:
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
+            });
         } finally {
             isLoading.value = false;
         }
@@ -186,16 +173,16 @@ export const useAuthStore = defineStore("auth", () => {
     const getProfile = async () => {
         try {
             isLoading.value = true;
-            const { data } = await authenticatedFetch<UserProfileResponse>(
+            const response = await authenticatedFetch<UserProfileResponse>(
                 `${apiUrl}/profile`,
                 {
                     method: "GET",
                 },
             );
 
-            if (data.value?.data) {
-                profile.value = data.value.data;
-                return data.value.data;
+            if (response?.data) {
+                profile.value = response.data;
+                return response.data;
             } else {
                 throw createError({
                     statusCode: 400,
@@ -220,7 +207,7 @@ export const useAuthStore = defineStore("auth", () => {
     ) => {
         try {
             isLoading.value = true;
-            const { data, error } = await authenticatedFetch<LoginResponse>(
+            const response = await authenticatedFetch<LoginResponse>(
                 `${apiUrl}`,
                 {
                     method: "PUT",
@@ -230,15 +217,8 @@ export const useAuthStore = defineStore("auth", () => {
                     },
                 },
             );
-            if (error.value) {
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage:
-                        error.value.data.message || error.value.statusMessage,
-                });
-            }
-            if (data.value?.data) {
-                authToken.value = data.value.data.accessToken;
+            if (response.data) {
+                authToken.value = response.data.accessToken;
                 await getProfile();
             }
         } catch (error) {
@@ -256,7 +236,7 @@ export const useAuthStore = defineStore("auth", () => {
     const updatePassword = async (oldPassword: string, newPassword: string) => {
         try {
             isLoading.value = true;
-            const { data, error } = await authenticatedFetch<LoginResponse>(
+            const response = await authenticatedFetch<LoginResponse>(
                 `${apiUrl}/password-change`,
                 {
                     method: "PUT",
@@ -266,15 +246,15 @@ export const useAuthStore = defineStore("auth", () => {
                     },
                 },
             );
-            if (error.value) {
+            /*             if (error.value) {
                 throw createError({
                     statusCode: error.value.statusCode,
                     statusMessage:
                         error.value.data.message || error.value.statusMessage,
                 });
-            }
-            if (data.value?.data) {
-                authToken.value = data.value.data.accessToken;
+            } */
+            if (response.data) {
+                authToken.value = response.data.accessToken;
             }
         } catch (error) {
             throw error;
@@ -290,7 +270,7 @@ export const useAuthStore = defineStore("auth", () => {
     const makePasswordResetRequest = async (email: string) => {
         try {
             isLoading.value = true;
-            const { data, error } = await useFetch<MessageResponse>(
+            const response = await $fetch<MessageResponse>(
                 `${apiUrl}/forgot-password`,
                 {
                     method: "POST",
@@ -299,19 +279,18 @@ export const useAuthStore = defineStore("auth", () => {
                     },
                 },
             );
-
-            if (error.value) {
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage:
-                        error.value.data.message || error.value.statusMessage,
-                });
-            }
-            if (data.value?.message) {
-                return data.value.message;
+            if (response.message) {
+                return response.message;
             }
         } catch (error) {
-            throw error;
+            const fetchError = error as FetchError;
+            throw createError({
+                statusCode: fetchError.statusCode || 500,
+                statusMessage:
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
+            });
         } finally {
             isLoading.value = false;
         }
@@ -326,7 +305,7 @@ export const useAuthStore = defineStore("auth", () => {
     const passwordReset = async (token: string, password: string) => {
         try {
             isLoading.value = true;
-            const { data, error } = await useFetch<MessageResponse>(
+            const response = await $fetch<MessageResponse>(
                 `${apiUrl}/password-reset`,
                 {
                     method: "PUT",
@@ -336,19 +315,19 @@ export const useAuthStore = defineStore("auth", () => {
                     },
                 },
             );
-            if (error.value) {
-                throw createError({
-                    statusCode: error.value.statusCode,
-                    statusMessage:
-                        error.value.data.message || error.value.statusMessage,
-                });
-            }
 
-            if (data.value?.message) {
-                return data.value.message;
+            if (response.message) {
+                return response.message;
             }
         } catch (error) {
-            throw error;
+            const fetchError = error as FetchError;
+            throw createError({
+                statusCode: fetchError.statusCode || 500,
+                statusMessage:
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
+            });
         } finally {
             isLoading.value = false;
         }

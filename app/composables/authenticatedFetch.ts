@@ -1,11 +1,12 @@
 import { useAuthStore } from "~/stores/auth.store";
+import type { FetchError } from "ofetch";
 
 export const useAuthenticatedFetch = () => {
     const store = useAuthStore();
 
     return async <T>(url: string, options: any = {}) => {
         const makeRequest = () =>
-            useFetch<T>(url, {
+            $fetch<T>(url, {
                 ...options,
                 headers: {
                     Authorization: `Bearer ${store.authToken}`,
@@ -14,30 +15,32 @@ export const useAuthenticatedFetch = () => {
                 credentials: "include",
             });
 
-        let response = await makeRequest();
-
-        if (
-            response.error.value?.statusCode === 401 &&
-            response.error.value?.message === "Invalid or expired token."
-        ) {
-            const refreshed = await store.refreshAuthToken();
-            if (refreshed) {
-                response = await makeRequest();
-            } else {
-                await store.logout();
-                throw createError({
-                    statusCode: 401,
-                    statusMessage: "Session expired.",
-                });
+        try {
+            return await makeRequest();
+        } catch (error) {
+            const fetchError = error as FetchError;
+            if (
+                fetchError.statusCode === 401 &&
+                fetchError.data?.message === "Invalid or expired token."
+            ) {
+                const refreshed = await store.refreshAuthToken();
+                if (refreshed) {
+                    return await makeRequest();
+                } else {
+                    await store.logout();
+                    throw createError({
+                        statusCode: 401,
+                        statusMessage: "Session expired.",
+                    });
+                }
             }
-        } else if (response.error.value !== undefined) {
             throw createError({
-                statusCode: response.error.value.statusCode,
+                statusCode: fetchError.statusCode || 500,
                 statusMessage:
-                    response.error.value.data.message ||
-                    response.error.value.statusMessage,
+                    fetchError.data?.message ||
+                    fetchError.message ||
+                    "An error as occurred.",
             });
         }
-        return response;
     };
 };
