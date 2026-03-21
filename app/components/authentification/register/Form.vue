@@ -75,7 +75,7 @@ const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
                 </UFormField>
             </div>
             <div class="mt-auto pt-4 flex justify-center">
-                <UButton type="submit" label="Register" icon="i-lucide-circle-plus" />
+                <UButton loading-auto type="submit" label="Register" icon="i-lucide-circle-plus" />
             </div>
         </UForm>
     </div>

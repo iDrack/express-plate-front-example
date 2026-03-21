@@ -97,7 +97,7 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
 
             </div>
             <div class="mt-auto pt-4 flex justify-center">
-                <UButton type="submit" label="Login" icon="i-lucide-log-in" />
+                <UButton loading-auto type="submit" label="Login" icon="i-lucide-log-in" />
             </div>
         </UForm>
     </div>

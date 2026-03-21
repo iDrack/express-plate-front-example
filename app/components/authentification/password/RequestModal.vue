@@ -39,10 +39,10 @@ const submitRequest = async (onEvent: FormSubmitEvent<PasswordResetRequestSchema
             <UForm :schema="passwordResetRequestSchema" :state="passwordResetRequestState"
                 class="flex flex-col flex-1 space-y-4" @submit="submitRequest">
                 <UFormField label="Email" name="email">
-                    <UInput v-model="passwordResetRequestState.email" type="email" />
+                    <UInput v-model="passwordResetRequestState.email" type="email" :autofocus="true"/>
                 </UFormField>
                 <div class="space-y-4">
-                    <UButton type="submit" label="Send reset link" icon="i-lucide-send" />
+                    <UButton loading-auto type="submit" label="Send reset link" icon="i-lucide-send" />
                 </div>
             </UForm>
         </div>

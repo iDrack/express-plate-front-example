@@ -54,7 +54,7 @@ const submitPasswordReset = async (onEvent: FormSubmitEvent<PasswordChageSchema>
                 @submit="submitPasswordReset">
                 <div class="space-y-4 flex-1 items-start">
                     <UFormField label="Password" name="password" class="flex-1">
-                        <UInput v-model="passwordState.password" type="password" class="w-full" />
+                        <UInput v-model="passwordState.password" type="password" class="w-full" :autofocus="true"/>
                     </UFormField>
                     <UFormField label="Retype your Password" name="passwordCheck" class="flex-1">
                         <UInput v-model="passwordState.passwordCheck" type="password" class="w-full" />
@@ -64,7 +64,7 @@ const submitPasswordReset = async (onEvent: FormSubmitEvent<PasswordChageSchema>
                     </div>
                 </div>
                 <div class="mt-auto pt-4 flex justify-center">
-                    <UButton type="submit" label="Submit" icon="i-lucide-send" />
+                    <UButton loading-auto type="submit" label="Submit" icon="i-lucide-send" />
                 </div>
             </UForm>
         </div>
