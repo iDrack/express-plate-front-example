@@ -41,9 +41,9 @@ const authStore = useAuthStore();
 const toast = useToast();
 const handleError = useHandleError();
 
-const submitRegister = (onEvent: FormSubmitEvent<RegisterSchema>) => {
+const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
     try {
-        authStore.register(registerState.name.trim(), registerState.email.trim(), registerState.password.trim());
+        await authStore.register(registerState.name.trim(), registerState.email.trim(), registerState.password.trim());
         toast.add({ title: 'Account created.', description: 'Your account has been registered.', color: 'success' });
     } catch (error) {
         handleError(error, toast);

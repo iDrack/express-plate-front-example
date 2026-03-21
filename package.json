@@ -20,6 +20,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.98",
     "@nuxt/icon": "^2.2.1",
     "@types/node": "^25.4.0"
   }

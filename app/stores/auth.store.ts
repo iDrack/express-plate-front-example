@@ -12,6 +12,9 @@ export const useAuthStore = defineStore("auth", () => {
     const isLoading = ref(false);
     const authToken = ref("");
     const profile = ref();
+    const isAuthenticated = computed(() => {
+        return !!authToken.value && !!profile.value
+    });
 
     /**
      * Create user account and log in, storing it's authToken.
@@ -29,6 +32,7 @@ export const useAuthStore = defineStore("auth", () => {
                 `${apiUrl}/register`,
                 {
                     method: "POST",
+                    credentials: 'include',
                     body: {
                         name: name.trim(),
                         email: email.toLowerCase().trim(),
@@ -83,6 +87,7 @@ export const useAuthStore = defineStore("auth", () => {
                 `${apiUrl}/login`,
                 {
                     method: "POST",
+                    credentials: "include",
                     body: {
                         name: name?.trim(),
                         email: email?.toLowerCase().trim(),
@@ -131,6 +136,8 @@ export const useAuthStore = defineStore("auth", () => {
         } finally {
             authToken.value = "";
             profile.value = null;
+            const refreshToken = useCookie('refreshToken')
+            refreshToken.value = null;
             navigateTo('/')
             useToast().add({ title: 'Disconnected', description: 'You have been disconnected.', color: 'info', icon: 'i-lucide-icon' })
         }
@@ -351,6 +358,7 @@ export const useAuthStore = defineStore("auth", () => {
         authToken: readonly(authToken),
         profile: readonly(profile),
         isLoading: readonly(isLoading),
+        isAuthenticated: readonly(isAuthenticated),
         register,
         login,
         logout,

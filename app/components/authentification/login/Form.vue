@@ -57,10 +57,13 @@ const handleError = useHandleError();
 
 const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
     try {
-        authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
+        await authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
         toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success' });
+        navigateTo('/');
     } catch (error) {
         //Handle different error types and toast content
+        console.log(error);
+        
         handleError(error, toast);
     }
 }
