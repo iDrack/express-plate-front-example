@@ -19,6 +19,7 @@ const loginSchema = v.union([
         email: v.pipe(
             v.string(),
             v.trim(),
+            v.empty(),
             v.email('Your email address is badly formatted.')
         ),
         password: v.pipe(
@@ -67,9 +68,9 @@ const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col">
+    <div class="w-full h-full flex flex-col min-w-sm">
         <h1 class="mb-4 text-center text-xl">Login</h1>
-        <UForm :schema="loginSchema" :state="loginState" class="flex flex-col flex-1" @submit="submitLogin">
+        <UForm :schema="loginSchema" :state="loginState" class="flex flex-col flex-1 " @submit="submitLogin">
             <div class="mx-12 space-y-4 flex-1">
                 <UFormField label="Username" name="username" class="flex-1">
                     <UInput v-model="loginState.name" type="text" class="w-full" />

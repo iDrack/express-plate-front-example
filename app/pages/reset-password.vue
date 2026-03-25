@@ -15,7 +15,7 @@ const passwordChageSchema = v.object({
     password: v.pipe(
         v.string(),
         v.trim(),
-        v.regex(passwordRegex, 'Your password must have 8 characters minimum, special characters, upper case and lower case characters.'),
+        v.regex(passwordRegex,'')
     ),
     passwordCheck: v.pipe(
         v.string(),
@@ -55,12 +55,14 @@ const submitPasswordReset = async (onEvent: FormSubmitEvent<PasswordChageSchema>
                 <UForm :schema="passwordChageSchema" :state="passwordState" class="w-full flex flex-col flex-1 pt-6"
                     @submit="submitPasswordReset">
                     <div class="space-y-4 flex-1 items-start">
-                        <UFormField label="Password" name="password" class="flex-1">
+                        <UFormField label="Password" name="password" class="flex-1"
+                            :ui="{ error: 'block min-h-10 whitespace-pre-line break-words' }">
                             <UInput v-model="passwordState.password" type="password" class="w-full" :autofocus="true" />
                         </UFormField>
                         <UFormField label="Retype your Password" name="passwordCheck" class="flex-1">
                             <UInput v-model="passwordState.passwordCheck" type="password" class="w-full" />
                         </UFormField>
+                        <AuthentificationPasswordStrengthChecker :password="passwordState.password"/>
                         <div class="flex justify-center">
                             <ULink to="/register" as="button" class="text-center">Go back to register page.</ULink>
                         </div>

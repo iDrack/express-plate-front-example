@@ -14,12 +14,13 @@ const registerSchema = v.object({
     email: v.pipe(
         v.string(),
         v.trim(),
+        v.empty(),
         v.email('Your email address is badly formatted.')
     ),
     password: v.pipe(
         v.string(),
         v.trim(),
-        v.regex(passwordRegex, 'Your password must have 8 characters minimum, special characters, upper case and lower case characters.'),
+        v.regex(passwordRegex,'')
     ),
     passwordCheck: v.pipe(
         v.string(),
@@ -52,9 +53,9 @@ const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col">
+    <div class="w-full h-full flex flex-col min-w-sm">
         <h1 class="mb-4 text-center text-xl">Register</h1>
-        <UForm :schema="registerSchema" :state="registerState" class="flex flex-col flex-1" @submit="submitRegister">
+        <UForm :schema="registerSchema" :state="registerState" class="flex flex-col flex-1 " @submit="submitRegister">
             <div class="mx-12 space-y-4 flex-1">
                 <UFormField label="Username" name="username" class="flex-1">
                     <UInput v-model="registerState.name" type="text" class="w-full" />
@@ -65,14 +66,15 @@ const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
                 </UFormField>
 
                 <UFormField label="Password" name="password" class="flex-1"
-                    :ui="{ error: 'block min-h-10 whitespace-normal break-words' }">
+                    :ui="{ error: 'block min-h-10 whitespace-pre-line break-words' }">
                     <UInput v-model="registerState.password" type="password" class="w-full" />
                 </UFormField>
-
                 <UFormField label="Retype your Password" name="passwordCheck" class="flex-1"
                     :ui="{ error: 'block min-h-10 whitespace-normal break-words' }">
                     <UInput v-model="registerState.passwordCheck" type="password" class="w-full" />
                 </UFormField>
+                        <AuthentificationPasswordStrengthChecker :password="registerState.password" />
+
             </div>
             <div class="mt-auto pt-4 flex justify-center">
                 <UButton loading-auto type="submit" label="Register" icon="i-lucide-circle-plus" />
