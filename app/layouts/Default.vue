@@ -10,23 +10,26 @@ const authState = computed(() => ({
 
 <template>
     <div class="min-h-screen flex flex-col">
-        <UHeader>
+        <UHeader mode="drawer">
             <template #title>
                 Express-Plate
             </template>
-            <HeaderNavigationDefault/>
-             <template #right>
+            <HeaderNavigationDefault />
+            <template #right>
                 <template v-if="authState.isLoading">
                 </template>
 
                 <template v-else-if="authState.isAuthenticated">
-                    <HeaderActionsProfile/>
+                    <HeaderActionsProfile />
                 </template>
 
                 <template v-else>
-                    <HeaderActionsRegister/>
+                    <HeaderActionsRegister />
                 </template>
-                <HeaderActionsDefault/>
+                <HeaderActionsDefault />
+            </template>
+            <template #body>
+                <HeaderNavigationDefault :orientation="'vertical'" />
             </template>
         </UHeader>
         <UContainer class="flex-1 flex">

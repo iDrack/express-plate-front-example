@@ -2,6 +2,11 @@
 import type { NavigationMenuItem } from '@nuxt/ui';
 
 const route = useRoute()
+const props = withDefaults(defineProps<{
+    orientation?: "horizontal" | "vertical" | undefined
+}>(), {
+    orientation: 'horizontal',
+})
 const items = computed<NavigationMenuItem[]>(() => [
     {
         label: "Home",
@@ -31,8 +36,7 @@ const items = computed<NavigationMenuItem[]>(() => [
 </script>
 
 <template>
-  <UNavigationMenu :items="items" />
+    <UNavigationMenu :items="items" :orientation="orientation"/>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
