@@ -27,11 +27,11 @@ export const useAuthenticatedFetch = () => {
                 if (refreshed) {
                     return await makeRequest();
                 } else {
-                    await store.logout();
-                    throw createError({
+                    await store.logout(true, true);
+/*                     throw createError({
                         statusCode: 401,
                         statusMessage: "Session expired.",
-                    });
+                    }); */
                 }
             }
             throw createError({

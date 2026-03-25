@@ -4,6 +4,7 @@ import * as v from 'valibot';
 import { useAuthStore } from '~/stores/auth.store';
 definePageMeta({
     middleware: 'check-reset-token',
+    layout: 'reset-password',
 });
 
 const route = useRoute()
@@ -38,7 +39,7 @@ const submitPasswordReset = async (onEvent: FormSubmitEvent<PasswordChageSchema>
     try {
         const response = await authStore.passwordReset(token.value, passwordState.password)
         toast.add({ title: 'Password updated.', description: `${response}`, color: 'success' })
-        authStore.logout();
+        authStore.logout(false,false);
         navigateTo('/register');
     } catch (error) {
         handleError(error, toast);

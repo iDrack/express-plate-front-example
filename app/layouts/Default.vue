@@ -14,6 +14,7 @@ const authState = computed(() => ({
             <template #title>
                 Express-Plate
             </template>
+            <HeaderNavigationDefault/>
              <template #right>
                 <template v-if="authState.isLoading">
                 </template>

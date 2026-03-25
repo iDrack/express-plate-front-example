@@ -27,7 +27,7 @@ export const useAuthStore = defineStore("auth", () => {
         try {
             isLoading.value = true;
             if (authToken.value !== "") {
-                await logout();
+                await logout(false, false);
             }
             const response = await $fetch<LoginResponse>(`${apiUrl}/register`, {
                 method: "POST",
@@ -103,7 +103,7 @@ export const useAuthStore = defineStore("auth", () => {
     /**
      * Disconnect the user and delete the auth token and the refresh token.
      */
-    const logout = async () => {
+    const logout = async (redirect: boolean, isSessionExpire?: boolean) => {
         try {
             await $fetch(`${apiUrl}/logout`, {
                 method: "POST",
@@ -126,13 +126,23 @@ export const useAuthStore = defineStore("auth", () => {
             profile.value = null;
             const refreshToken = useCookie("refreshToken");
             refreshToken.value = null;
-            navigateTo("/");
-            useToast().add({
-                title: "Disconnected",
-                description: "You have been disconnected.",
-                color: "info",
-                icon: "i-lucide-icon",
-            });
+            if (isSessionExpire) {
+                if(redirect) navigateTo("/register");
+                useToast().add({
+                    title: "Disconnected",
+                    description: "Your session has expired.",
+                    color: "info",
+                    icon: "i-lucide-log-out",
+                });
+            } else {
+                if(redirect) navigateTo("/");
+                useToast().add({
+                    title: "Disconnected",
+                    description: "You have been disconnected.",
+                    color: "info",
+                    icon: "i-lucide-log-out",
+                });
+            }
         }
     };
 
