@@ -27,12 +27,14 @@ export const useHandleError = () => {
                 title: "An error has occurred.",
                 description: `${error.message}`,
                 color: "error",
+                icon: "i-lucide-triangle-alert"
             });
         } else {
             toast.add({
                 title: "An error has occurred.",
                 description: String(error),
                 color: "error",
+                icon: "i-lucide-triangle-alert"
             });
         }
     };

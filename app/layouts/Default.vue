@@ -16,6 +16,7 @@ const authState = computed(() => ({
             </template>
             <HeaderNavigationDefault />
             <template #right>
+                <HeaderActionsDefault />
                 <template v-if="authState.isLoading">
                 </template>
 
@@ -26,7 +27,6 @@ const authState = computed(() => ({
                 <template v-else>
                     <HeaderActionsRegister />
                 </template>
-                <HeaderActionsDefault />
             </template>
             <template #body>
                 <HeaderNavigationDefault :orientation="'vertical'" />

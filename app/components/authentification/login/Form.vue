@@ -58,7 +58,7 @@ const handleError = useHandleError();
 const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
     try {
         await authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
-        toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success' });
+        toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success', icon:"i-lucide-user-check" });
         navigateTo('/profile');
     } catch (error) {
         handleError(error, toast);

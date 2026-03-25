@@ -38,8 +38,8 @@ const handleError = useHandleError();
 const submitPasswordReset = async (onEvent: FormSubmitEvent<PasswordChageSchema>) => {
     try {
         const response = await authStore.passwordReset(token.value, passwordState.password)
-        toast.add({ title: 'Password updated.', description: `${response}`, color: 'success' })
-        await authStore.logout(false,false);
+        toast.add({ title: 'Password updated.', description: `${response}`, color: 'success', icon: 'i-lucide-check' })
+        await authStore.logout(false, false);
         navigateTo('/register');
     } catch (error) {
         handleError(error, toast);

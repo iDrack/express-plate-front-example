@@ -21,7 +21,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
             const toast = useToast();
             toast.add({
                 title: "Please log in.",
-                description: "You need an account ot view this page.",
+                description: "You need an account to view this page.",
                 color: "info",
                 icon: "i-lucide-info",
             });

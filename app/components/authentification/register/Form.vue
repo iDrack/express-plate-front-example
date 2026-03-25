@@ -44,7 +44,7 @@ const handleError = useHandleError();
 const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
     try {
         await authStore.register(registerState.name.trim(), registerState.email.trim(), registerState.password.trim());
-        toast.add({ title: 'Account created.', description: 'Your account has been registered.', color: 'success' });
+        toast.add({ title: 'Account created.', description: 'Your account has been registered.', color: 'success', icon: "i-lucide-user-plus" });
     } catch (error) {
         handleError(error, toast);
     }

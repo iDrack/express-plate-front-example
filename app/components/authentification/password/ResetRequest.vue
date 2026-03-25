@@ -24,7 +24,7 @@ const handleError = useHandleError();
 const submitRequest = async (onEvent: FormSubmitEvent<PasswordResetRequestSchema>) => {
     try {
         const response = await authStore.makePasswordResetRequest(passwordResetRequestState.email);
-        toast.add({ title: 'Request sent.', description: `${response}`, color: 'success' })
+        toast.add({ title: 'Request sent.', description: `${response}`, color: 'success', icon: 'i-lucide-send' })
     } catch (error) {
         handleError(error, toast);
     }
