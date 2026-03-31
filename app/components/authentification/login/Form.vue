@@ -2,7 +2,6 @@
 import { useAuthStore } from "~/stores/auth.store";
 import * as v from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui";
-import RequestModal from "../password/ResetRequest.vue";
 
 const loginSchema = v.union([
     v.object({
@@ -19,8 +18,8 @@ const loginSchema = v.union([
         email: v.pipe(
             v.string(),
             v.trim(),
-            v.empty(),
-            v.email('Your email address is badly formatted.')
+            v.nonEmpty('Provid a valide e-mail address.'),
+            v.email('Provide a valid e-mail address.')
         ),
         password: v.pipe(
             v.string(),
@@ -35,7 +34,8 @@ const loginSchema = v.union([
         email: v.pipe(
             v.string(),
             v.trim(),
-            v.email('Your email address is badly formatted.')
+            v.nonEmpty('Provide a valid e-mail address.'),
+            v.email('Provide a valid e-mail address.')
         ),
         password: v.pipe(
             v.string(),
@@ -59,7 +59,7 @@ const handleError = useHandleError();
 const submitLogin = async (onEvent: FormSubmitEvent<LoginSchema>) => {
     try {
         await authStore.login(loginState.name.trim(), loginState.email.toLowerCase().trim(), loginState.password.trim());
-        toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success', icon:"i-lucide-user-check" });
+        toast.add({ title: 'Login successful.', description: 'You are logged in.', color: 'success', icon: "i-lucide-user-check" });
         navigateTo('/profile');
     } catch (error) {
         handleError(error, toast);

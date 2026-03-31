@@ -177,7 +177,7 @@ export const useAuthStore = defineStore("auth", () => {
     };
 
     /**
-     * Fetch the user profile.
+     * Fetch the user profile. Also refresh the user authToken.
      * @returns User profile.
      */
     const getProfile = async () => {

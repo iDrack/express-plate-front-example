@@ -14,13 +14,13 @@ const registerSchema = v.object({
     email: v.pipe(
         v.string(),
         v.trim(),
-        v.empty(),
-        v.email('Your email address is badly formatted.')
+        v.nonEmpty('Provide a valid e-mail address.'),
+        v.email('Provide a valid e-mail address.')
     ),
     password: v.pipe(
         v.string(),
         v.trim(),
-        v.regex(passwordRegex,'')
+        v.regex(passwordRegex, '')
     ),
     passwordCheck: v.pipe(
         v.string(),
@@ -46,6 +46,7 @@ const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
     try {
         await authStore.register(registerState.name.trim(), registerState.email.trim(), registerState.password.trim());
         toast.add({ title: 'Account created.', description: 'Your account has been registered.', color: 'success', icon: "i-lucide-user-plus" });
+        navigateTo('/profile');
     } catch (error) {
         handleError(error, toast);
     }
@@ -73,7 +74,7 @@ const submitRegister = async (onEvent: FormSubmitEvent<RegisterSchema>) => {
                     :ui="{ error: 'block min-h-10 whitespace-normal break-words' }">
                     <UInput v-model="registerState.passwordCheck" type="password" class="w-full" />
                 </UFormField>
-                        <AuthentificationPasswordStrengthChecker :password="registerState.password" />
+                <AuthentificationPasswordStrengthChecker :password="registerState.password" />
 
             </div>
             <div class="mt-auto pt-4 flex justify-center">
