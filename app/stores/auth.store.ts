@@ -6,8 +6,10 @@ import type {
 } from "./auth.type";
 import { useAuthenticatedFetch } from "~/composables/authenticatedFetch";
 import type { FetchError } from "ofetch";
+import { useTransfertStore } from "./transfert.store";
 
 export const useAuthStore = defineStore("auth", () => {
+    const transfertStore = useTransfertStore();
     const authenticatedFetch = useAuthenticatedFetch();
     const apiUrl = `${useRuntimeConfig().public.apiUrl}/users`;
     const isLoading = ref(false);
@@ -124,6 +126,7 @@ export const useAuthStore = defineStore("auth", () => {
         } finally {
             authToken.value = "";
             profile.value = null;
+            transfertStore.resetUserFiles();
             const refreshToken = useCookie("refreshToken");
             refreshToken.value = null;
             if (isSessionExpire) {

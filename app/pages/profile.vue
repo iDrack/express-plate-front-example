@@ -6,8 +6,16 @@
         <div class="flex flex-col w-full pb-0 lg:pb-24">
             <div class="w-full h-full flex flex-col items-stretch">
                 <ProfileInfosDisplay />
-                
+                <div>
+                    <!--Display file browsing component-->
+                </div>
             </div>
+
+            <div>
+            <!--Display widget to upload files-->
+            <TransfertUploadDragAndDrop />
+            </div>
+
         </div>
     </div>
 </template>
