@@ -19,16 +19,13 @@ export const useAuthenticatedFetch = () => {
             return await makeRequest();
         } catch (error) {
             const fetchError = error as FetchError;
-            if (
-                fetchError.statusCode === 401 &&
-                fetchError.data?.message === "Invalid or expired token."
-            ) {
+            if (fetchError.statusCode === 401) {
                 const refreshed = await store.refreshAuthToken();
                 if (refreshed) {
                     return await makeRequest();
                 } else {
                     await store.logout(true, true);
-/*                     throw createError({
+                    /*                     throw createError({
                         statusCode: 401,
                         statusMessage: "Session expired.",
                     }); */

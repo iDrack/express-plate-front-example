@@ -156,11 +156,13 @@ export const useAuthStore = defineStore("auth", () => {
     const refreshAuthToken = async (): Promise<Boolean> => {
         try {
             isLoading.value = true;
+            const headers = import.meta.server ? useRequestHeaders(["cookie"]) : undefined;
             const response = await $fetch<LoginResponse>(`${apiUrl}/refresh`, {
                 method: "POST",
                 credentials: "include",
+                headers,
             });
-            if (response.data) {
+            if (response.data?.accessToken) {
                 authToken.value = response.data.accessToken;
                 return true;
             }
