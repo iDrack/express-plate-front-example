@@ -7,19 +7,19 @@ export interface FileMetaData {
     userId: number;
 }
 
-export interface FilePageMetaData {
+export interface TransfertUploadResponse {
+    status: string;
+    data: {
+        files: Record<string, FileMetaData>;
+    };
+}
+
+export interface UserFilesGetResponse {
+    data: FileMetaData[];
     page: number;
     totalPages: number;
     limit: number;
     totalItems: number;
-    totalFiles: number,
+    totalFiles: number;
     prevPage: number | null;
-    nextPage: number | null;
-}
-
-export interface TransfertResponse {
-    status: string,
-    data: {
-        files: Record<string, FileMetaData>
-    }
-}
+    nextPage: number | null;}

@@ -8,6 +8,7 @@
                 <ProfileInfosDisplay />
                 <div>
                     <!--Display file browsing component-->
+                    <TransfertBrowseFileList />
                 </div>
             </div>
 
