@@ -11,6 +11,7 @@ export const useTransfertStore = defineStore("transfert", () => {
     const userFilesUpload = ref<Array<FileMetaData>>([]);
     const userFilesData = ref<Array<FileMetaData>>([]);
     // metadata
+    const maxItemsPerPage = 10;
     const currentPage = ref<number>(0);
     const totalPages = ref<number>(0);
     const totalItems = ref<number>(0);
@@ -66,7 +67,7 @@ export const useTransfertStore = defineStore("transfert", () => {
                     },
                 );
                 console.log(response);
-                
+
                 totalItems.value = response.totalItems;
                 totalPages.value = response.totalPages;
                 if (page === 1) {
@@ -79,7 +80,6 @@ export const useTransfertStore = defineStore("transfert", () => {
                 }
                 console.log(userFilesData.value.length);
                 console.log(userFilesData.value);
-                
             }
         } catch (error) {
             throw error;
@@ -106,6 +106,24 @@ export const useTransfertStore = defineStore("transfert", () => {
         }
     };
 
+    const getPage = async (page: number) => {
+        try {
+            if (hasNext) {
+                if (page > currentPage.value) {
+                    await loadPage(page);
+                }
+                const offset = (page - 1) * maxItemsPerPage;
+                const limit =
+                    page === totalPages.value
+                        ? userFilesData.value.length
+                        : offset + maxItemsPerPage;
+                return userFilesData.value.slice(offset, limit);
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
+
     const resetData = () => {
         userFilesData.value = [];
         currentPage.value = 0;
@@ -114,7 +132,7 @@ export const useTransfertStore = defineStore("transfert", () => {
 
     const resetUserFiles = () => {
         userFilesUpload.value = [];
-        resetData()
+        resetData();
     };
 
     return {
@@ -131,5 +149,6 @@ export const useTransfertStore = defineStore("transfert", () => {
         resetData,
         loadMore,
         loadPage,
+        getPage,
     };
 });

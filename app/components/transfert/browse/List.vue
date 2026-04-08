@@ -15,21 +15,24 @@ const {
 } = storeToRefs(transfertStore)
 
 onMounted(async () => {
-    try {
-        await transfertStore.fetchUserFiles(1);
 
-    } catch (error) {
-        handleError(error, toast)
-    }
 })
 
 </script>
 
 <template>
-    <div>
-        <ul v-for="file in userFilesData" key="file.id">
-            <li>{{ file.id }} : {{ file.originalName }}</li>
-        </ul>
+    <div class="h-full flex flex-col pt-4 pb-4">
+        <div v-if="isLoading" class="">
+            <TransfertBrowseSkeleton />
+        </div>
+        <div v-else-if="userFilesData.length > 0">
+            <ul v-for="file in userFilesData" key="file.id">
+                <li>{{ file.id }} : {{ file.originalName }}</li>
+            </ul>
+        </div>
+        <div v-else class="h-full flex flex-col">
+            <TransfertBrowseEmpty />
+        </div>
     </div>
 </template>
 

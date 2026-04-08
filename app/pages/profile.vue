@@ -1,20 +1,30 @@
 <script setup lang='ts'>
+import { useTransfertStore } from '~/stores/transfert.store';
+
+const transfertStore = useTransfertStore();
+const handleError = useHandleError();
+const toast = useToast();
+
+try {
+    await transfertStore.fetchUserFiles(1);
+
+} catch (error) {
+    handleError(error, toast)
+}
 </script>
 
 <template>
     <div class="flex-1 flex">
-        <div class="flex flex-col w-full pb-0 lg:pb-24">
+        <div class="flex flex-col w-full pb-0 ">
             <div class="w-full h-full flex flex-col items-stretch">
                 <ProfileInfosDisplay />
-                <div>
-                    <!--Display file browsing component-->
-                    <TransfertBrowseFileList />
-                </div>
+                <!--Display file browsing component-->
+                <TransfertBrowseList />
             </div>
 
             <div>
-            <!--Display widget to upload files-->
-            <TransfertUploadDragAndDrop />
+                <!--Display widget to upload files-->
+                <TransfertUploadDragAndDrop />
             </div>
 
         </div>

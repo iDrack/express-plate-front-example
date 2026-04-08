@@ -23,6 +23,23 @@ const transfertStore = useTransfertStore();
 const toast = useToast();
 const handleError = useHandleError();
 
+
+
+watch(
+  () => fileUploadState.files?.length ?? 0,
+  async (newLength, oldLength) => {
+    if (newLength <= oldLength) return
+
+    await nextTick()
+
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth"
+    })
+  },
+  { flush: "post" }
+)
+
 const isFileCountValid = computed(() => {
   const count = fileUploadState.files?.length ?? 0
   return count >= 1 && count <= 10
@@ -73,12 +90,12 @@ const sendFiles = async (event: FormSubmitEvent<FileUploadSchema>) => {
 </script>
 
 <template>
-  <div>
+  <div class="pb-4">
     <UForm :schema="fileUploadSchema" :state="fileUploadState" @submit="sendFiles"
       class="flex flex-col flex-1 space-y-4">
       <UFormField>
         <div @drop.capture="handleDrop">
-          <UFileUpload multiple :dropzone="true" v-model="fileUploadState.files" label="Upload your files here" />
+          <UFileUpload multiple :dropzone="true" v-model="fileUploadState.files" label="Upload your files here"/>
         </div>
       </UFormField>
 
