@@ -124,6 +124,33 @@ export const useTransfertStore = defineStore("transfert", () => {
         }
     };
 
+    const downloadFile = async (id: number, originalName: string) => {
+        try {
+            isLoading.value = true;
+
+            const blob = await authenticatedFetch<Blob>(
+                `${apiUrl}/download/${id}`,
+                {
+                    method: "GET",
+                    responseType: "blob",
+                },
+            );
+
+            const fileUrl = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = fileUrl;
+            link.download = originalName;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(fileUrl);
+        } catch (error) {
+            throw error;
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
     const resetData = () => {
         userFilesData.value = [];
         currentPage.value = 0;
@@ -138,7 +165,7 @@ export const useTransfertStore = defineStore("transfert", () => {
     return {
         isLoading: readonly(isLoading),
         userFilesUpload: readonly(userFilesUpload),
-        userFilesData: readonly(userFilesData),
+        userFilesData,
         currentPage: readonly(currentPage),
         totalPages: readonly(totalPages),
         totalItems: readonly(totalItems),
@@ -150,5 +177,6 @@ export const useTransfertStore = defineStore("transfert", () => {
         loadMore,
         loadPage,
         getPage,
+        downloadFile,
     };
 });
