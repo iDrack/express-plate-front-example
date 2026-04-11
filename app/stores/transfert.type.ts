@@ -22,4 +22,10 @@ export interface UserFilesGetResponse {
     totalItems: number;
     totalFiles: number;
     prevPage: number | null;
-    nextPage: number | null;}
+    nextPage: number | null;
+}
+
+export interface TransfertDeleteResponse {
+    status: string;
+    data: string;
+}

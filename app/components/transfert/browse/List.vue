@@ -1,5 +1,7 @@
 <script setup lang='ts'>
 import type { TableColumn } from '@nuxt/ui';
+import { title } from 'node:process';
+import { describe } from 'node:test';
 import { useTransfertStore } from '~/stores/transfert.store';
 import type { FileMetaData } from '~/stores/transfert.type';
 
@@ -8,17 +10,56 @@ const transfertStore = useTransfertStore();
 const toast = useToast()
 const handleError = useHandleError();
 
+const route = useRoute()
+const router = useRouter()
+
+const paginationPage = computed({
+    get: () => currentPage.value,
+    set: async (page: number) => {
+        if (page === currentPage.value) return
+
+        await router.replace({
+            query: {
+                ...route.query,
+                page: String(page)
+            }
+        })
+    }
+})
+
 const {
     userFilesData,
+    maxItemsPerPage,
     currentPage,
+    totalFiles,
     totalPages,
     hasNext,
     isLoading,
 } = storeToRefs(transfertStore)
 
 const deleteFile = async (id: number) => {
-    console.log(id);
+    try {
+        const response = await transfertStore.deleteFile(id);
+        if (response.status === '400') {
+            toast.add({ title: 'Please wait.', description: response.data, color: 'info', icon: 'i-lucide-clock' });
+            return;
+        }
+        toast.add({ title: 'File deleted.', description: response.data, color: 'success', icon: 'i-lucide-check' });
+        const shouldGoToPreviousPage = userFilesData.value.length === 1 && currentPage.value > 1
 
+        if (shouldGoToPreviousPage) {
+            await router.replace({
+                query: {
+                    ...route.query,
+                    page: String(currentPage.value - 1)
+                }
+            });
+            return
+        }
+        await transfertStore.fetchUserFiles();
+    } catch (error) {
+        handleError(error, toast)
+    }
 }
 
 const downloadFile = async (id: number, originalName: string) => {
@@ -142,13 +183,11 @@ const columns: TableColumn<FileMetaData>[] = [
 </script>
 
 <template>
-    <div class="h-full flex flex-col pt-4 pb-4">
-        <!--         <div v-if="isLoading" class="">
-            <TransfertBrowseSkeleton />
-        </div> -->
-        <div v-if="userFilesData.length > 0">
+    <div class="h-full flex flex-col pb-4">
+        <div v-if="totalFiles > 0">
             <UTable :loading="isLoading" loading-color="primary" loading-animation="carousel" :data="userFilesData"
                 :columns="columns" />
+            <UPagination v-model:page="paginationPage" :total="totalFiles" :items-per-page="maxItemsPerPage" />
         </div>
         <div v-else class="h-full flex flex-col">
             <TransfertBrowseEmpty />

@@ -83,6 +83,7 @@ const sendFiles = async (event: FormSubmitEvent<FileUploadSchema>) => {
       icon: "i-lucide-file-check"
     });
     fileUploadState.files = []
+    await transfertStore.fetchUserFiles();
   } catch (error) {
     handleError(error, toast);
   }

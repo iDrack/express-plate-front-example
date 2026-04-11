@@ -2,12 +2,27 @@
 import { useTransfertStore } from '~/stores/transfert.store';
 
 const transfertStore = useTransfertStore();
+const route = useRoute()
 const handleError = useHandleError();
 const toast = useToast();
 
-try {
-    await transfertStore.fetchUserFiles(1);
+const getPageFromQuerry = (value: unknown) => {
+    const page = Number(value)
+    return Number.isInteger(page) && page > 0 ? page : 1
+}
 
+watch (() => route.query.page, 
+    async (pageQuery) => {
+        try {
+            transfertStore.currentPage = getPageFromQuerry(pageQuery);
+            await transfertStore.fetchUserFiles();
+        } catch (error) {
+            handleError(error, toast)
+        }
+    })
+
+try {
+    await transfertStore.fetchUserFiles();
 } catch (error) {
     handleError(error, toast)
 }

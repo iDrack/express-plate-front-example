@@ -1,5 +1,6 @@
 import type {
     FileMetaData,
+    TransfertDeleteResponse,
     TransfertUploadResponse,
     UserFilesGetResponse,
 } from "./transfert.type";
@@ -11,9 +12,10 @@ export const useTransfertStore = defineStore("transfert", () => {
     const userFilesUpload = ref<Array<FileMetaData>>([]);
     const userFilesData = ref<Array<FileMetaData>>([]);
     // metadata
-    const maxItemsPerPage = 10;
-    const currentPage = ref<number>(0);
+    const maxItemsPerPage = ref<number>(10);
+    const currentPage = ref<number>(1);
     const totalPages = ref<number>(0);
+    const totalFiles = ref<number>(0);
     const totalItems = ref<number>(0);
 
     const hasNext = computed(() => currentPage.value < totalPages.value);
@@ -50,79 +52,51 @@ export const useTransfertStore = defineStore("transfert", () => {
         }
     };
 
-    const fetchUserFiles = async (page: number) => {
+    const fetchUserFiles = async () => {
         if (isLoading.value) {
             return;
         }
         try {
-            if (page > currentPage.value) {
-                isLoading.value = true;
-                const response = await authenticatedFetch<UserFilesGetResponse>(
-                    `${apiUrl}/all`,
-                    {
-                        method: "GET",
-                        query: {
-                            page: page,
-                        },
+            isLoading.value = true;
+            const response = await authenticatedFetch<UserFilesGetResponse>(
+                `${apiUrl}/all`,
+                {
+                    method: "GET",
+                    query: {
+                        page: currentPage.value,
                     },
-                );
-                console.log(response);
+                },
+            );
 
-                totalItems.value = response.totalItems;
-                totalPages.value = response.totalPages;
-                if (page === 1) {
-                    userFilesData.value = response.data;
-                } else {
-                    userFilesData.value = [
-                        ...userFilesData.value,
-                        ...response.data,
-                    ];
-                }
-                console.log(userFilesData.value.length);
-                console.log(userFilesData.value);
-            }
+            maxItemsPerPage.value = response.limit;
+            totalItems.value = response.totalItems;
+            totalFiles.value = response.totalFiles;
+            totalPages.value = response.totalPages;
+            userFilesData.value = response.data;
         } catch (error) {
             throw error;
         } finally {
             isLoading.value = false;
         }
     };
-
-    const loadMore = async () => {
-        try {
-            if (hasNext.value) await fetchUserFiles(currentPage.value + 1);
-        } catch (error) {
-            throw error;
+    
+    const deleteFile = async (id: number): Promise<TransfertDeleteResponse> => {
+        if(isLoading.value) {
+            return {status: '400', data: "Please try again later."};
         }
-    };
-
-    const loadPage = async (page: number) => {
         try {
-            if (page > currentPage.value) {
-                const target = page - currentPage.value;
-            }
+            isLoading.value = true;
+            const response = await authenticatedFetch<TransfertDeleteResponse>(`${apiUrl}/${id}`, {
+                method: 'DELETE'
+            });
+            return response;
         } catch (error) {
-            throw error;
+            throw error
+        } finally {
+            isLoading.value = false
         }
-    };
 
-    const getPage = async (page: number) => {
-        try {
-            if (hasNext) {
-                if (page > currentPage.value) {
-                    await loadPage(page);
-                }
-                const offset = (page - 1) * maxItemsPerPage;
-                const limit =
-                    page === totalPages.value
-                        ? userFilesData.value.length
-                        : offset + maxItemsPerPage;
-                return userFilesData.value.slice(offset, limit);
-            }
-        } catch (error) {
-            throw error;
-        }
-    };
+    }
 
     const downloadFile = async (id: number, originalName: string) => {
         try {
@@ -153,8 +127,11 @@ export const useTransfertStore = defineStore("transfert", () => {
 
     const resetData = () => {
         userFilesData.value = [];
-        currentPage.value = 0;
+        currentPage.value = 1;
         totalPages.value = 0;
+        totalFiles.value = 0;
+        totalItems.value = 0;
+        maxItemsPerPage.value = 10;
     };
 
     const resetUserFiles = () => {
@@ -166,17 +143,17 @@ export const useTransfertStore = defineStore("transfert", () => {
         isLoading: readonly(isLoading),
         userFilesUpload: readonly(userFilesUpload),
         userFilesData,
-        currentPage: readonly(currentPage),
+        maxItemsPerPage: readonly(maxItemsPerPage),
+        currentPage,
         totalPages: readonly(totalPages),
+        totalFiles: readonly(totalFiles),
         totalItems: readonly(totalItems),
         hasNext: readonly(hasNext),
         uploadFiles,
         fetchUserFiles,
         resetUserFiles,
         resetData,
-        loadMore,
-        loadPage,
-        getPage,
+        deleteFile,
         downloadFile,
     };
 });
