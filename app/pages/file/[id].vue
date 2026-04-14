@@ -65,7 +65,15 @@ const downloadFile = async () => {
 
 <template>
     <div class="flex flex-1">
-        <div class="flex flex-col w-full pb-0 ">
+        <div class="flex flex-col w-full pb-0">
+            <div class="flex space-x-2 py-4">
+                <UTooltip text="Go back to file selection">
+                    <UButton to="/profile" icon="i-lucide-arrow-big-left-dash" color="neutral" variant="outline" />
+                </UTooltip>
+                <h1 class="text-lg md:text-xl">{{ filename }}</h1>
+            </div>
+                <USeparator orientation="horizontal" color="neutral" type="solid" size="sm" class="pb-6" />
+
             <div v-if="mimeType.includes('image')">
                 <img :src="displayPreview()" />
             </div>
@@ -77,9 +85,10 @@ const downloadFile = async () => {
                 <UAlert icon="i-lucide-file-x" color="neutral" variant="subtle" title="Preview unavailable"
                     description="This file type cannot be displayed in the browser." />
             </div>
-            <div class="flex justify-end space-x-2">
-                <UButton label="Download" icon="i-lucide-download" @click="downloadFile()" color="neutral" variant="outline"/>
-                <UButton label="Delete" icon="i-lucide-trash" @click="deleteFile()" color="error" variant="outline"/>
+            <div class="flex justify-end space-x-2 pt-6">
+                <UButton label="Download" icon="i-lucide-download" @click="downloadFile()" color="neutral"
+                    variant="outline" />
+                <UButton label="Delete" icon="i-lucide-trash" @click="deleteFile()" color="error" variant="outline" />
             </div>
         </div>
     </div>
