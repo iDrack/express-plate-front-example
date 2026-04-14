@@ -35,7 +35,6 @@ const isModalOpen = ref(false)
                 </div>
             </div>
         </div>
-        <USeparator orientation="horizontal" color="neutral" type="solid" size="sm" />
     </div>
     <div v-else-if="!profile">
         <ProfileInfosSkeleton />

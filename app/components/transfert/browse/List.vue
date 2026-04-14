@@ -1,17 +1,18 @@
 <script setup lang='ts'>
 import type { TableColumn } from '@nuxt/ui';
-import { title } from 'node:process';
-import { describe } from 'node:test';
+import { getPaginationRowModel } from '@tanstack/vue-table';
 import { useTransfertStore } from '~/stores/transfert.store';
 import type { FileMetaData } from '~/stores/transfert.type';
 
 const UButton = resolveComponent('UButton');
 const transfertStore = useTransfertStore();
-const toast = useToast()
+const toast = useToast();
 const handleError = useHandleError();
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
+
+const table = useTemplateRef('table')
 
 const paginationPage = computed({
     get: () => currentPage.value,
@@ -32,8 +33,6 @@ const {
     maxItemsPerPage,
     currentPage,
     totalFiles,
-    totalPages,
-    hasNext,
     isLoading,
 } = storeToRefs(transfertStore)
 
@@ -146,12 +145,24 @@ const columns: TableColumn<FileMetaData>[] = [
     {
         accessorKey: 'mimeType',
         header: 'Type',
-        cell: ({ row }) => getFileCategory(row.original.mimeType)
+        cell: ({ row }) => getFileCategory(row.original.mimeType),
+        meta: {
+            class: {
+                th: 'text-right',
+                td: 'text-right',
+            }
+        }
     },
     {
         accessorKey: 'size',
         header: 'Size',
-        cell: ({ row }) => getHumanReadableSize(Number(row.getValue('size')))
+        cell: ({ row }) => getHumanReadableSize(Number(row.getValue('size'))),
+        meta: {
+            class: {
+                th: 'text-right',
+                td: 'text-right',
+            }
+        }
     },
     {
         id: 'actions',
@@ -185,9 +196,17 @@ const columns: TableColumn<FileMetaData>[] = [
 <template>
     <div class="h-full flex flex-col pb-4">
         <div v-if="totalFiles > 0">
-            <UTable :loading="isLoading" loading-color="primary" loading-animation="carousel" :data="userFilesData"
-                :columns="columns" />
-            <UPagination v-model:page="paginationPage" :total="totalFiles" :items-per-page="maxItemsPerPage" />
+            <div class="border-default border-x border-y rounded-md md:min-h-[765px] flex flex-col">
+                <div class="flex-1">
+                    <UTable :loading="isLoading" loading-color="primary" loading-animation="carousel"
+                        :data="userFilesData" :columns="columns" />
+                </div>
+
+                <div class="flex justify-end border-t border-default py-4 px-4">
+                    <UPagination v-model:page="paginationPage" :total="totalFiles" :items-per-page="maxItemsPerPage" />
+
+                </div>
+            </div>
         </div>
         <div v-else class="h-full flex flex-col">
             <TransfertBrowseEmpty />
