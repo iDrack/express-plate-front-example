@@ -5,6 +5,7 @@ import { useTransfertStore } from '~/stores/transfert.store';
 import type { FileMetaData } from '~/stores/transfert.type';
 
 const UButton = resolveComponent('UButton');
+const ULink = resolveComponent('ULink');
 const transfertStore = useTransfertStore();
 const toast = useToast();
 const handleError = useHandleError();
@@ -140,7 +141,9 @@ const columns: TableColumn<FileMetaData>[] = [
     {
         accessorKey: 'originalName',
         header: 'Name',
-        cell: ({ row }) => `${row.getValue('originalName')}`
+        cell: ({ row }) => h(ULink, {
+            to: `/file/${row.original.id}`
+        }, () => row.original.originalName),
     },
     {
         accessorKey: 'mimeType',
@@ -204,7 +207,6 @@ const columns: TableColumn<FileMetaData>[] = [
 
                 <div class="flex justify-end border-t border-default py-4 px-4">
                     <UPagination v-model:page="paginationPage" :total="totalFiles" :items-per-page="maxItemsPerPage" />
-
                 </div>
             </div>
         </div>

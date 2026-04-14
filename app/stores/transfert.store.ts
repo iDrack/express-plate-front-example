@@ -1,5 +1,6 @@
 import type {
     FileMetaData,
+    FileMetaDataResponse,
     TransfertDeleteResponse,
     TransfertUploadResponse,
     UserFilesGetResponse,
@@ -52,6 +53,22 @@ export const useTransfertStore = defineStore("transfert", () => {
         }
     };
 
+    const fetchFileInfo = async (id: number) => {
+        try {
+            const response = await authenticatedFetch<FileMetaDataResponse>(
+                `${apiUrl}/${id}`,
+                {
+                    method: "GET"
+                }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
     const fetchUserFiles = async () => {
         if (isLoading.value) {
             return;
@@ -79,24 +96,26 @@ export const useTransfertStore = defineStore("transfert", () => {
             isLoading.value = false;
         }
     };
-    
+
     const deleteFile = async (id: number): Promise<TransfertDeleteResponse> => {
-        if(isLoading.value) {
-            return {status: '400', data: "Please try again later."};
+        if (isLoading.value) {
+            return { status: "400", data: "Please try again later." };
         }
         try {
             isLoading.value = true;
-            const response = await authenticatedFetch<TransfertDeleteResponse>(`${apiUrl}/${id}`, {
-                method: 'DELETE'
-            });
+            const response = await authenticatedFetch<TransfertDeleteResponse>(
+                `${apiUrl}/${id}`,
+                {
+                    method: "DELETE",
+                },
+            );
             return response;
         } catch (error) {
-            throw error
+            throw error;
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
-
-    }
+    };
 
     const downloadFile = async (id: number, originalName: string) => {
         try {
@@ -118,6 +137,21 @@ export const useTransfertStore = defineStore("transfert", () => {
             link.click();
             link.remove();
             URL.revokeObjectURL(fileUrl);
+        } catch (error) {
+            throw error;
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    const getFile = async (id: number) => {
+        try {
+            isLoading.value = true;
+            const blob = await authenticatedFetch<Blob>(`${apiUrl}/get/${id}`, {
+                method: "GET",
+                responseType: "blob",
+            });
+            return blob;
         } catch (error) {
             throw error;
         } finally {
@@ -150,10 +184,12 @@ export const useTransfertStore = defineStore("transfert", () => {
         totalItems: readonly(totalItems),
         hasNext: readonly(hasNext),
         uploadFiles,
+        fetchFileInfo,
         fetchUserFiles,
         resetUserFiles,
         resetData,
         deleteFile,
+        getFile,
         downloadFile,
     };
 });

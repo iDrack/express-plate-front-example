@@ -7,6 +7,11 @@ export interface FileMetaData {
     userId: number;
 }
 
+export interface FileMetaDataResponse {
+    status: string;
+    data: FileMetaData;
+}
+
 export interface TransfertUploadResponse {
     status: string;
     data: {
