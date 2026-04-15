@@ -34,13 +34,6 @@ const displayPdf = async () => {
     window.open(pdfUrl, '_blank')
 }
 
-const readText = async () => {
-    const text = await blob.value.text()
-    return text;
-}
-//TODO: add navigation buttons (ex: go back)
-//TODO: update UI, make page pretty :3
-
 const deleteFile = async () => {
     try {
         const response = await transfertStore.deleteFile(Number(route.params.id));
@@ -48,6 +41,7 @@ const deleteFile = async () => {
             toast.add({ title: 'Please wait.', description: response.data, color: 'info', icon: 'i-lucide-clock' });
             return;
         }
+        toast.add({ title: 'File deleted.', description: response.data, color: 'success', icon: 'i-lucide-check' });
         navigateTo('/profile')
     } catch (error) {
         handleError(error, toast)
@@ -80,10 +74,13 @@ const downloadFile = async () => {
             <div v-else-if="mimeType.includes('pdf')">
                 <iframe :src="displayPreview()" type="application/pdf" width="100%" height="800"
                     class="border rounded"></iframe>
+                    <div>
+                        <UButton variant="link" label="See file in fullscreen" @click="displayPdf"/>
+                    </div>
             </div>
-            <div v-else class="flex items-center justify-center p-8">
+            <div v-else class="flex items-center justify-center p-8 md:h-[600px]">
                 <UAlert icon="i-lucide-file-x" color="neutral" variant="subtle" title="Preview unavailable"
-                    description="This file type cannot be displayed in the browser." />
+                    description="This file type cannot be displayed in the browser." class="md:h-full items-center"/>
             </div>
             <div class="flex justify-end space-x-2 pt-6">
                 <UButton label="Download" icon="i-lucide-download" @click="downloadFile()" color="neutral"

@@ -149,12 +149,6 @@ const columns: TableColumn<FileMetaData>[] = [
         accessorKey: 'mimeType',
         header: 'Type',
         cell: ({ row }) => getFileCategory(row.original.mimeType),
-        meta: {
-            class: {
-                th: 'text-right',
-                td: 'text-right',
-            }
-        }
     },
     {
         accessorKey: 'size',
